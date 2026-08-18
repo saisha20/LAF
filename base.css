@@ -1,0 +1,263 @@
+/* base.css - shared across every page */
+
+:root {
+  --navy: #10193a;
+  --navy-dark: #0b122b;
+  --indigo: #3949ab;
+  --indigo-dark: #2f3a8f;
+  --bg-light: #dfe4f3;
+  --bg-white: #ffffff;
+  --text-dark: #1a1f2e;
+  --text-muted: #6b7280;
+  --border-gray: #d7dbe6;
+  --success: #1f9d55;
+  --error: #d64545;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  color: var(--text-dark);
+  background: var(--bg-white);
+  line-height: 1.5;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ---------- Header ---------- */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 48px;
+  border-bottom: 1px solid var(--border-gray);
+  background: var(--bg-white);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--navy);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.brand-name {
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--navy);
+}
+
+.brand-tagline {
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.3px;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.site-nav a {
+  font-size: 14px;
+  color: var(--text-dark);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.nav-login {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.btn-navy {
+  background: var(--navy);
+  color: #fff;
+}
+
+.btn-indigo {
+  background: var(--indigo);
+  color: #fff;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ---------- Footer ---------- */
+.site-footer {
+  background: var(--navy);
+  color: #cfd4e6;
+  padding: 28px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.site-footer .brand-name {
+  color: #fff;
+}
+
+.site-footer small {
+  color: #8f96b8;
+  font-size: 11px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 28px;
+  font-size: 13px;
+}
+
+/* ---------- Form field states (shared by login/register) ---------- */
+.field {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-gray);
+  background: #eef0f6;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.field input:focus,
+.field select:focus {
+  background: #fff;
+  border-color: var(--indigo);
+}
+
+.field.valid input {
+  border-color: var(--success);
+  background: #f2fbf5;
+}
+
+.field.invalid input {
+  border-color: var(--error);
+  background: #fdf2f2;
+}
+
+.field-msg {
+  font-size: 12px;
+  margin-top: 5px;
+  min-height: 14px;
+}
+
+.field.valid .field-msg {
+  color: var(--success);
+}
+
+.field.invalid .field-msg {
+  color: var(--error);
+}
+
+.field-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.password-wrap {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+}
+
+.form-alert {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+
+.form-alert.error {
+  background: #fdf2f2;
+  color: var(--error);
+  border: 1px solid #f3caca;
+}
+
+.form-alert.success {
+  background: #f2fbf5;
+  color: var(--success);
+  border: 1px solid #bfe8cc;
+}
