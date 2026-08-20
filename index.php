@@ -41,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // If not a user, check admin table
         $stmt = $pdo->prepare(
             'SELECT admin_id, full_name, email, password_hash, role
              FROM admin
@@ -62,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        // Neither user nor admin matched
         $error = 'Incorrect email or password.';
     }
 }

@@ -1,10 +1,3 @@
-/**
- * login.js
- * Client-side validation for the login form.
- * NOTE: This is for UX only. The real security check happens in
- * login.php on the server (see validate.php + password_verify()).
- */
-
 document.addEventListener('DOMContentLoaded', function () {
 
   const emailInput    = document.getElementById('email');
@@ -21,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const msgBox = f.wrap.querySelector('.field-msg');
 
     if (!f.touched) {
-      // Don't show red before the user has actually left the field once
+      
       f.wrap.classList.remove('valid', 'invalid');
       msgBox.textContent = '';
       return;
@@ -53,15 +46,12 @@ document.addEventListener('DOMContentLoaded', function () {
     return true;
   }
 
-  // Live typing feedback (only after the field has been touched once)
   emailInput.addEventListener('input', () => validateEmail(true));
   passwordInput.addEventListener('input', () => validatePassword(true));
 
-  // Mark touched on blur, then validate
   emailInput.addEventListener('blur', () => { fields.email.touched = true; validateEmail(true); });
   passwordInput.addEventListener('blur', () => { fields.password.touched = true; validatePassword(true); });
 
-  // Enter key moves to next field only if current field is valid
   emailInput.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -82,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Final check on submit
   form.addEventListener('submit', function (e) {
     fields.email.touched = true;
     fields.password.touched = true;
@@ -93,7 +82,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Show/hide password
   document.querySelectorAll('.password-toggle').forEach(function (btn) {
     btn.addEventListener('click', function () {
       const target = document.getElementById(btn.dataset.target);

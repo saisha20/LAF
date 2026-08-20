@@ -2,7 +2,6 @@
 require_once 'auth.php';
 require_once 'db.php';
 
-// Already logged in? send them straight to their dashboard.
 if (isLoggedIn()) {
     header('Location: ' . (isAdmin() ? 'admin_dashboard.php' : 'user_dashboard.php'));
     exit;
@@ -17,13 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($email === '' || $password === '') {
         $error = 'Please enter both email and password.';
     } else {
-        // Prepared statement - protects against SQL injection
+
         $stmt = $pdo->prepare('SELECT user_id, full_name, email, password_hash, role FROM users WHERE email = ? LIMIT 1');
         $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($user && password_verify($password, $user['password_hash'])) {
-            // Correct credentials - start session
+      
             $_SESSION['user_id']   = $user['user_id'];
             $_SESSION['full_name'] = $user['full_name'];
             $_SESSION['role']      = $user['role'];

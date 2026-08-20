@@ -30,13 +30,10 @@ $stmt = $pdo->prepare('SELECT full_name, email, phone, user_type, created_at FRO
 $stmt->execute([$_SESSION['user_id']]);
 $me = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// ---- Contribution stats, derived from real data ----
-// "Items Returned" = the user's own reports that reached status 'closed'
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM reports WHERE user_id = ? AND status = 'closed'");
 $stmt->execute([$_SESSION['user_id']]);
 $itemsReturned = (int)$stmt->fetchColumn();
 
-// "Successful Matches" = verified matches linking any of the user's reports
 $stmt = $pdo->prepare(
     "SELECT COUNT(DISTINCT m.match_id)
      FROM matches m
@@ -47,7 +44,6 @@ $stmt = $pdo->prepare(
 $stmt->execute([$_SESSION['user_id'], $_SESSION['user_id']]);
 $successfulMatches = (int)$stmt->fetchColumn();
 
-// "Community Trust Score" - % of the user's own reports that reached matched/closed
 $stmt = $pdo->prepare('SELECT COUNT(*) FROM reports WHERE user_id = ?');
 $stmt->execute([$_SESSION['user_id']]);
 $totalReports = (int)$stmt->fetchColumn();
@@ -58,7 +54,6 @@ $resolvedReports = (int)$stmt->fetchColumn();
 
 $trustScore = $totalReports > 0 ? round(($resolvedReports / $totalReports) * 100) : 0;
 
-// ---- Active listings (open or pending, not closed) ----
 $stmt = $pdo->prepare(
     "SELECT report_id, type, item_name, status, location, category_id
      FROM reports

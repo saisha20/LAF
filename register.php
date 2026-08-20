@@ -9,7 +9,7 @@ if (isLoggedIn()) {
 }
 
 $error = '';
-// Keep whatever the user typed so the form doesn't clear on error
+
 $old = ['full_name' => '', 'email' => '', 'phone' => ''];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -18,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $old['phone']     = trim($_POST['phone'] ?? '');
     $password         = $_POST['password'] ?? '';
 
-    // ---- SERVER-SIDE VALIDATION (the real security layer) ----
     $nameCheck  = validate_full_name($old['full_name']);
     $emailCheck = validate_email($old['email']);
     $phoneCheck = validate_phone($old['phone']);
@@ -30,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif (!$passCheck['valid'])   $error = $passCheck['message'];
 
     if ($error === '') {
-        // Check email isn't already registered
+    
         $stmt = $pdo->prepare('SELECT user_id FROM users WHERE email = ? LIMIT 1');
         $stmt->execute([$old['email']]);
         if ($stmt->fetch()) {
@@ -40,8 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($error === '') {
         $hash = password_hash($password, PASSWORD_DEFAULT);
-        // user_type and role are not set here - the users table defaults
-        // user_type to 'student' and role to 'user' automatically.
+     ]
         $stmt = $pdo->prepare(
             'INSERT INTO users (full_name, email, phone, password_hash)
              VALUES (?, ?, ?, ?)'

@@ -12,7 +12,6 @@ if ($row && $row['photo_data']) {
     header('Cache-Control: private, max-age=3600');
     echo $row['photo_data'];
 } else {
-    // 1x1 transparent PNG fallback - the card CSS shows a category icon behind it
     header('Content-Type: image/png');
     echo base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=');
 }

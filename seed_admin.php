@@ -1,13 +1,9 @@
 <?php
-
 require_once 'db.php';
-
-// ---- Admin details ----
 $adminName     = 'System Admin';
 $adminEmail    = 'admin@kathford.edu.np';
 $adminPhone    = '9800000000';
 $adminPassword = 'Admin@123';
-// ------------------------
 
 $stmt = $pdo->prepare(
     'SELECT admin_id FROM admin WHERE email = ? LIMIT 1'

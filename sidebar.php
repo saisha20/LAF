@@ -43,8 +43,6 @@ $navItems = [
     </nav>
 
     <?php
-      // On the Report Lost page, the quick button offers Report Found (and vice versa).
-      // On every other page, it defaults to Report Lost.
       $currentFile = basename($_SERVER['PHP_SELF']);
       if ($currentFile === 'report_lost.php') {
           $postBtnHref = 'report_found.php';

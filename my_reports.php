@@ -6,7 +6,6 @@ requireLogin();
 
 $uid = $_SESSION['user_id'];
 
-// Delete own report
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_report_id'])) {
     $stmt = $pdo->prepare('DELETE FROM reports WHERE report_id = ? AND user_id = ?');
     $stmt->execute([$_POST['delete_report_id'], $uid]);
@@ -14,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_report_id'])) 
     exit;
 }
 
-// ---- Stats (real data) ----
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM reports WHERE user_id = ? AND status = 'open'");
 $stmt->execute([$uid]);
 $activeCount = (int)$stmt->fetchColumn();
@@ -29,7 +27,6 @@ $stmt = $pdo->prepare(
 $stmt->execute([$uid, $uid]);
 $matchedCount = (int)$stmt->fetchColumn();
 
-// ---- "Found a match?" banner - a real pending match on one of the user's reports ----
 $stmt = $pdo->prepare(
     "SELECT r.report_id, r.item_name
      FROM matches m
@@ -40,7 +37,6 @@ $stmt = $pdo->prepare(
 $stmt->execute([$uid]);
 $pendingMatch = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// ---- Filters ----
 $typeFilter = $_GET['type'] ?? 'all'; // all | lost | found
 $search     = trim($_GET['q'] ?? '');
 $page       = max(1, (int)($_GET['page'] ?? 1));
