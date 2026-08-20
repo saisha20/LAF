@@ -1,5 +1,71 @@
 <?php
 require_once 'auth.php';
+require_once 'db.php';
+
+if (isLoggedIn()) {
+    header('Location: ' . (isAdmin() ? 'admin_dashboard.php' : 'user_dashboard.php'));
+    exit;
+}
+
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+
+    if ($email === '' || $password === '') {
+
+        $error = 'Please enter both email and password.';
+
+    } else {
+
+        // First check normal users
+        $stmt = $pdo->prepare(
+            'SELECT user_id, full_name, email, password_hash 
+             FROM users 
+             WHERE email = ? 
+             LIMIT 1'
+        );
+
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user && password_verify($password, $user['password_hash'])) {
+
+            $_SESSION['user_id'] = $user['user_id'];
+            $_SESSION['full_name'] = $user['full_name'];
+            $_SESSION['role'] = 'user';
+
+            header('Location: user_dashboard.php');
+            exit;
+        }
+
+        // If not a user, check admin table
+        $stmt = $pdo->prepare(
+            'SELECT admin_id, full_name, email, password_hash, role
+             FROM admin
+             WHERE email = ?
+             LIMIT 1'
+        );
+
+        $stmt->execute([$email]);
+        $admin = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($admin && password_verify($password, $admin['password_hash'])) {
+
+            $_SESSION['user_id'] = $admin['admin_id'];
+            $_SESSION['full_name'] = $admin['full_name'];
+            $_SESSION['role'] = 'admin';
+
+            header('Location: admin_dashboard.php');
+            exit;
+        }
+
+        // Neither user nor admin matched
+        $error = 'Incorrect email or password.';
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">

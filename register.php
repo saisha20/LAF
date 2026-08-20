@@ -9,29 +9,28 @@ if (isLoggedIn()) {
 }
 
 $error = '';
-$old = ['full_name' => '', 'user_type' => 'student', 'email' => '', 'phone' => ''];
+// Keep whatever the user typed so the form doesn't clear on error
+$old = ['full_name' => '', 'email' => '', 'phone' => ''];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $old['full_name'] = trim($_POST['full_name'] ?? '');
-    $old['user_type'] = trim($_POST['user_type'] ?? 'student');
     $old['email']     = trim($_POST['email'] ?? '');
     $old['phone']     = trim($_POST['phone'] ?? '');
     $password         = $_POST['password'] ?? '';
 
+    // ---- SERVER-SIDE VALIDATION (the real security layer) ----
     $nameCheck  = validate_full_name($old['full_name']);
-    $typeCheck  = validate_user_type($old['user_type']);
     $emailCheck = validate_email($old['email']);
     $phoneCheck = validate_phone($old['phone']);
     $passCheck  = validate_password($password);
 
     if (!$nameCheck['valid'])       $error = $nameCheck['message'];
-    elseif (!$typeCheck['valid'])   $error = $typeCheck['message'];
     elseif (!$emailCheck['valid'])  $error = $emailCheck['message'];
     elseif (!$phoneCheck['valid'])  $error = $phoneCheck['message'];
     elseif (!$passCheck['valid'])   $error = $passCheck['message'];
 
     if ($error === '') {
-       
+        // Check email isn't already registered
         $stmt = $pdo->prepare('SELECT user_id FROM users WHERE email = ? LIMIT 1');
         $stmt->execute([$old['email']]);
         if ($stmt->fetch()) {
@@ -41,11 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($error === '') {
         $hash = password_hash($password, PASSWORD_DEFAULT);
+        // user_type and role are not set here - the users table defaults
+        // user_type to 'student' and role to 'user' automatically.
         $stmt = $pdo->prepare(
-            'INSERT INTO users (full_name, email, phone, password_hash, user_type, role)
-             VALUES (?, ?, ?, ?, ?, "user")'
+            'INSERT INTO users (full_name, email, phone, password_hash)
+             VALUES (?, ?, ?, ?)'
         );
-        $stmt->execute([$old['full_name'], $old['email'], $old['phone'], $hash, $old['user_type']]);
+        $stmt->execute([$old['full_name'], $old['email'], $old['phone'], $hash]);
 
         header('Location: login.php?registered=1');
         exit;
@@ -74,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
 
-    <h2>Reuniting people<br>With their<br>Belongings</h2>
+    <h2>Reuniting people<br>with their<br>Belongings</h2>
 
     <div class="auth-feature"><span class="icon-box">&#128221;</span> Report lost or found items instantly</div>
     <div class="auth-feature"><span class="icon-box">&#128269;</span> Search and filter the item registry</div>
@@ -94,25 +95,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <form id="registerForm" method="POST" action="register.php" novalidate>
 
         <div class="field" id="field-full_name">
-          <label for="full_name">Full Name*</label>
+          <label for="full_name">Full Name</label>
           <input type="text" id="full_name" name="full_name" value="<?php echo htmlspecialchars($old['full_name']); ?>" autocomplete="name">
           <div class="field-msg"></div>
         </div>
 
         <div class="field" id="field-email">
-          <label for="email">University Email*</label>
+          <label for="email">University Email</label>
           <input type="text" id="email" name="email" value="<?php echo htmlspecialchars($old['email']); ?>" placeholder="student@kathford.edu.np" autocomplete="email">
           <div class="field-msg"></div>
         </div>
 
         <div class="field" id="field-phone">
-          <label for="phone">Phone Number*</label>
+          <label for="phone">Phone Number</label>
           <input type="text" id="phone" name="phone" value="<?php echo htmlspecialchars($old['phone']); ?>" placeholder="98XXXXXXXX" maxlength="10" autocomplete="tel">
           <div class="field-msg"></div>
         </div>
 
         <div class="field" id="field-password">
-          <label for="password">Password*</label>
+          <label for="password">Password</label>
           <div class="password-wrap">
             <input type="password" id="password" name="password" autocomplete="new-password">
             <button type="button" class="password-toggle" data-target="password">Show</button>
@@ -130,6 +131,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </div>
 
-<script src="register.js"></script>
+<script src="register.js?v=5"></script>
 </body>
 </html>

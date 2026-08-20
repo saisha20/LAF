@@ -31,8 +31,11 @@ function validate_email($email) {
     if ($email === '') {
         return ['valid' => false, 'message' => 'Email is required.'];
     }
-    // Basic shape check first
-    if (!preg_match('/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', $email)) {
+    // Basic shape check first - local part must start with a letter
+    if (!preg_match('/^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/', $email)) {
+        if (preg_match('/^\d/', $email)) {
+            return ['valid' => false, 'message' => 'Email cannot start with a number.'];
+        }
         return ['valid' => false, 'message' => 'Enter a valid email address.'];
     }
     // Must be the college domain
@@ -72,13 +75,6 @@ function validate_password($password) {
     }
     if (!preg_match('/[^A-Za-z0-9]/', $password)) {
         return ['valid' => false, 'message' => 'Password must contain at least one symbol (e.g. ! @ # $).'];
-    }
-    return ['valid' => true, 'message' => 'Looks good.'];
-}
-
-function validate_user_type($type) {
-    if (!in_array($type, ['student', 'staff'], true)) {
-        return ['valid' => false, 'message' => 'Please select whether you are a student or staff.'];
     }
     return ['valid' => true, 'message' => 'Looks good.'];
 }

@@ -30,6 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please describe the item.';
     } elseif ($old['found_date'] === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $old['found_date'])) {
         $error = 'Please enter a valid found date.';
+    } elseif ($old['found_date'] > date('Y-m-d')) {
+        $error = 'Found date cannot be in the future.';
     } elseif (!in_array($old['condition_status'], $validConditions, true)) {
         $error = 'Please choose a valid condition.';
     } elseif ($old['location'] === '') {
@@ -119,7 +121,7 @@ require 'sidebar.php';
       <div class="field-row">
         <div class="field">
           <label for="found_date">Found Date</label>
-          <input type="date" id="found_date" name="found_date" value="<?php echo htmlspecialchars($old['found_date']); ?>">
+          <input type="date" id="found_date" name="found_date" value="<?php echo htmlspecialchars($old['found_date']); ?>" max="<?php echo date('Y-m-d'); ?>">
         </div>
         <div class="field">
           <label for="condition_status">Condition</label>
@@ -133,7 +135,7 @@ require 'sidebar.php';
 
       <div class="field">
         <label for="location">Found Location (Building/Room)</label>
-        <input type="text" id="location" name="location" placeholder="e.g. Room 402" value="<?php echo htmlspecialchars($old['location']); ?>">
+        <input type="text" id="location" name="location" placeholder="e.g. Science Building, Room 402" value="<?php echo htmlspecialchars($old['location']); ?>">
       </div>
 
       <div class="field">

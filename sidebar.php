@@ -72,9 +72,15 @@ $navItems = [
       <div class="topbar-actions">
         <span class="topbar-icon">&#128276;</span>
         <span class="topbar-icon">&#9881;</span>
-        <a href="logout.php" class="topbar-avatar" title="Logout (<?php echo htmlspecialchars($_SESSION['full_name']); ?>)">
-          <?php echo strtoupper(substr($_SESSION['full_name'], 0, 1)); ?>
-        </a>
+                <div class="user-menu">
+          <button type="button" class="topbar-avatar" onclick="toggleUserMenu()" title="<?php echo htmlspecialchars($_SESSION['full_name']); ?>">
+            <?php echo strtoupper(substr($_SESSION['full_name'], 0, 1)); ?>
+          </button>
+          <div class="user-menu-dropdown" id="userMenuDropdown">
+            <a href="profile.php">Profile</a>
+            <a href="logout.php">Logout</a>
+          </div>
+        </div>
       </div>
     </header>
 

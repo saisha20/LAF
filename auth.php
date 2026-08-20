@@ -1,10 +1,4 @@
 <?php
-/**
- * auth.php
- * Session handling + authorization helpers.
- * Include this at the TOP of any page that needs to know who is
- * logged in, or that must be protected from unauthorized access.
- */
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -15,13 +9,10 @@ function isLoggedIn() {
 }
 
 function isAdmin() {
-    return isLoggedIn() && $_SESSION['role'] === 'admin';
+    return isLoggedIn() && isset($_SESSION['role'])
+        && $_SESSION['role'] === 'admin';
 }
 
-/**
- * Call at the top of any page only logged-in users may see.
- * Redirects to login.php if not logged in.
- */
 function requireLogin() {
     if (!isLoggedIn()) {
         header('Location: login.php');
@@ -29,13 +20,9 @@ function requireLogin() {
     }
 }
 
-/**
- * Call at the top of admin-only pages.
- * A normal user typing the URL directly gets redirected away,
- * not just hidden with CSS/JS.
- */
 function requireAdmin() {
     requireLogin();
+
     if (!isAdmin()) {
         header('Location: user_dashboard.php');
         exit;

@@ -6,7 +6,7 @@ requireLogin();
 $categories = $pdo->query('SELECT category_id, category_name FROM categories ORDER BY category_name')->fetchAll(PDO::FETCH_ASSOC);
 
 $error = '';
-$old = ['item_name' => '', 'category_id' => '', 'description' => '', 'color' => '', 'brand' => '', 'reward_amount' => ''];
+$old = ['item_name' => '', 'category_id' => '', 'description' => '', 'color' => '', 'brand' => '', 'reward_amount' => '', 'date_lost' => '', 'condition_status' => 'new'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $old['item_name']     = trim($_POST['item_name'] ?? '');
@@ -15,6 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $old['color']         = trim($_POST['color'] ?? '');
     $old['brand']         = trim($_POST['brand'] ?? '');
     $old['reward_amount'] = trim($_POST['reward_amount'] ?? '');
+    $old['date_lost']        = trim($_POST['date_lost'] ?? '');
+    $old['condition_status'] = $_POST['condition_status'] ?? 'new';
     $isPublic             = isset($_POST['is_public']) ? 1 : 0;
 
     if ($old['item_name'] === '') {
@@ -23,10 +25,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please choose a category.';
     } elseif ($old['description'] === '') {
         $error = 'Please describe the item.';
+    } elseif ($old['date_lost'] === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $old['date_lost'])) {
+        $error = 'Please enter a valid date lost.';
+    } elseif ($old['date_lost'] > date('Y-m-d')) {
+        $error = 'Date lost cannot be in the future.';
+    } elseif (!in_array($old['condition_status'], ['new', 'good', 'fair', 'poor'], true)) {
+        $error = 'Please choose a valid condition.';
     } elseif ($old['reward_amount'] !== '' && !is_numeric($old['reward_amount'])) {
         $error = 'Reward must be a number.';
     }
 
+    // Optional photo upload -> stored directly in the database
     $photoData = null;
     $photoType = null;
     if ($error === '' && isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
@@ -45,10 +54,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($error === '') {
         $stmt = $pdo->prepare(
             'INSERT INTO reports
-                (user_id, type, item_name, category_id, description, color, brand, reward_amount,
+                (user_id, type, item_name, category_id, description, color, brand, reward_amount, condition_status,
                  location, date_reported, status, is_public, photo_data, photo_type)
              VALUES
-                (?, "lost", ?, ?, ?, ?, ?, ?, ?, CURDATE(), "open", ?, ?, ?)'
+                (?, "lost", ?, ?, ?, ?, ?, ?, ?, ?, ?, "open", ?, ?, ?)'
         );
         $stmt->execute([
             $_SESSION['user_id'],
@@ -58,7 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $old['color'] !== '' ? $old['color'] : null,
             $old['brand'] !== '' ? $old['brand'] : null,
             $old['reward_amount'] !== '' ? $old['reward_amount'] : null,
-            'Not specified', 
+            $old['condition_status'],
+            'Not specified', // no location field in this form; kept for schema compatibility
+            $old['date_lost'],
             $isPublic,
             $photoData,
             $photoType,
@@ -108,6 +119,21 @@ require 'sidebar.php';
       <div class="field">
         <label for="description">Description</label>
         <textarea id="description" name="description" rows="4" placeholder="Describe unique markings, scratches, or contents inside..."><?php echo htmlspecialchars($old['description']); ?></textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="date_lost">Date Lost</label>
+          <input type="date" id="date_lost" name="date_lost" value="<?php echo htmlspecialchars($old['date_lost']); ?>" max="<?php echo date('Y-m-d'); ?>">
+        </div>
+        <div class="field">
+          <label for="condition_status">Condition</label>
+          <select id="condition_status" name="condition_status">
+            <?php foreach (['new' => 'New', 'good' => 'Good', 'fair' => 'Fair', 'poor' => 'Poor'] as $val => $label): ?>
+              <option value="<?php echo $val; ?>" <?php echo $old['condition_status'] === $val ? 'selected' : ''; ?>><?php echo $label; ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
       </div>
 
       <div class="field-row three">
@@ -180,3 +206,5 @@ function previewPhoto(input) {
   }
 }
 </script>
+
+

@@ -162,4 +162,4 @@ require 'sidebar.php';
   <?php endif; ?>
 <?php endif; ?>
 
-<?php require 'dashboard_footer.php'; ?>
+

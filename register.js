@@ -10,17 +10,15 @@
 document.addEventListener('DOMContentLoaded', function () {
 
   const nameInput     = document.getElementById('full_name');
-  const typeSelect     = document.getElementById('user_type');
   const emailInput    = document.getElementById('email');
   const phoneInput    = document.getElementById('phone');
   const passwordInput = document.getElementById('password');
   const form           = document.getElementById('registerForm');
 
-  const order = ['full_name', 'user_type', 'email', 'phone', 'password'];
+  const order = ['full_name', 'email', 'phone', 'password'];
 
   const fields = {
     full_name: { input: nameInput,     wrap: document.getElementById('field-full_name'), touched: false },
-    user_type: { input: typeSelect,    wrap: document.getElementById('field-user_type'), touched: false },
     email:     { input: emailInput,    wrap: document.getElementById('field-email'),     touched: false },
     phone:     { input: phoneInput,    wrap: document.getElementById('field-phone'),     touched: false },
     password:  { input: passwordInput, wrap: document.getElementById('field-password'),  touched: false }
@@ -74,14 +72,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   nameInput.addEventListener('blur', function () { fields.full_name.touched = true; validateName(true); });
 
-  // ---------- Register As ----------
-  function validateType() {
-    const ok = typeSelect.value === 'student' || typeSelect.value === 'staff';
-    setState('user_type', ok, 'Please select whether you are a student or staff.', true);
-    return ok;
-  }
-  typeSelect.addEventListener('change', function () { fields.user_type.touched = true; validateType(); });
-
   // ---------- University Email ----------
   function validateEmail(showError) {
     const value = emailInput.value.trim();
@@ -90,9 +80,10 @@ document.addEventListener('DOMContentLoaded', function () {
       else setState('email', true, '');
       return false;
     }
-    const shapeOk = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value);
+    const shapeOk = /^[A-Za-z][A-Za-z0-9._%+-]*@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value);
     if (!shapeOk) {
-      setState('email', false, 'Enter a valid email address.', showError);
+      const startsWithDigit = /^\d/.test(value);
+      setState('email', false, startsWithDigit ? 'Email cannot start with a number.' : 'Enter a valid email address.', showError);
       return false;
     }
     const domainOk = /@kathford\.edu\.np$/i.test(value);
@@ -105,7 +96,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // typing (e.g. "saisha@") - only block clearly invalid characters.
     const value = emailInput.value;
     const hasInvalidChar = /[^A-Za-z0-9._%+\-@]/.test(value);
-    if (hasInvalidChar) {
+    const startsWithDigit = /^\d/.test(value);
+    if (startsWithDigit) {
+      setState('email', false, 'Email cannot start with a number.', true);
+    } else if (hasInvalidChar) {
       setState('email', false, 'That character is not allowed in an email.', true);
     } else if (fields.email.touched) {
       validateEmail(true);
@@ -136,17 +130,30 @@ document.addEventListener('DOMContentLoaded', function () {
     return ok;
   }
 
-  phoneInput.addEventListener('input', function () {
+    phoneInput.addEventListener('input', function () {
     // Strip any non-digit character as they type
     phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
-    if (phoneInput.value.length === 0) {
+    const value = phoneInput.value;
+
+    if (value.length === 0) {
       setState('phone', true, '');
-    } else if (phoneInput.value.length === 10 || fields.phone.touched) {
+      return;
+    }
+
+    // As soon as what's typed so far can no longer become "97" or "98",
+    // flag it right away - even after just the first digit.
+    const prefixSoFar = value.slice(0, 2);
+    const stillPossible = '97'.startsWith(prefixSoFar) || '98'.startsWith(prefixSoFar);
+
+    if (!stillPossible) {
+      setState('phone', false, 'Phone number must start with 97 or 98.', true);
+    } else if (value.length === 10 || fields.phone.touched) {
       validatePhone(true);
     } else {
       setState('phone', true, '');
     }
   });
+  
   phoneInput.addEventListener('blur', function () { fields.phone.touched = true; validatePhone(true); });
 
   // ---------- Password ----------
@@ -183,7 +190,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // ---------- Enter key moves to the next field ----------
   const validators = {
     full_name: validateName,
-    user_type: validateType,
     email: validateEmail,
     phone: validatePhone,
     password: validatePassword
