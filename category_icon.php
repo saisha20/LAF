@@ -1,9 +1,5 @@
 <?php
-/**
- * category_icon.php
- * Returns a fallback emoji icon for a report card when no photo was
- * uploaded, based on its category name.
- */
+
 function category_icon($categoryName) {
     $map = [
         'Electronics'            => '&#128187;',
