@@ -37,16 +37,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if ($error === '') {
+       if ($error === '') {
         $hash = password_hash($password, PASSWORD_DEFAULT);
-     ]
+       
         $stmt = $pdo->prepare(
             'INSERT INTO users (full_name, email, phone, password_hash)
              VALUES (?, ?, ?, ?)'
         );
         $stmt->execute([$old['full_name'], $old['email'], $old['phone'], $hash]);
 
-        header('Location: login.php?registered=1');
+     
+        $_SESSION['user_id']   = $pdo->lastInsertId();
+        $_SESSION['full_name'] = $old['full_name'];
+        $_SESSION['role']      = 'user';
+
+        header('Location: user_dashboard.php');
         exit;
     }
 }
@@ -57,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="UTF-8">
 <title>Create Account - Foundly</title>
 <link rel="stylesheet" href="base.css">
-<link rel="stylesheet" href="auth.css">
+<link rel="stylesheet" href="auth.css?v=2">
 <link rel="stylesheet" href="register.css">
 </head>
 <body>
@@ -129,6 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 </div>
 
-<script src="register.js?v=5"></script>
+<script src="register.js?v=6"></script>
 </body>
 </html>

@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function () {
 
   const nameInput     = document.getElementById('full_name');
@@ -17,7 +18,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function setState(fieldName, isValid, message, forceShow) {
     const f = fields[fieldName];
+    const msgBox = f.wrap.querySelector('.field-msg');
 
+    // Don't scare the user with red before they've left the field
+    // or typed something invalid mid-way (e.g. just "S").
     if (!f.touched && !forceShow) {
       f.wrap.classList.remove('valid', 'invalid');
       msgBox.textContent = '';
@@ -29,6 +33,8 @@ document.addEventListener('DOMContentLoaded', function () {
     msgBox.textContent = isValid ? '' : message;
   }
 
+  // ---------- Full Name ----------
+  // Letters and single spaces only, cannot start with a number/symbol
   function validateName(showError) {
     const value = nameInput.value.trim();
     if (value === '') {
@@ -40,6 +46,9 @@ document.addEventListener('DOMContentLoaded', function () {
     setState('full_name', ok, 'Only letters and spaces are allowed.', true);
     return ok;
   }
+
+  // While actively typing, only flag a genuinely bad character
+  // (a number or symbol) - don't punish a normal partial name.
   nameInput.addEventListener('input', function () {
     const value = nameInput.value;
     if (value === '') {
@@ -55,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   nameInput.addEventListener('blur', function () { fields.full_name.touched = true; validateName(true); });
 
+  // ---------- University Email ----------
   function validateEmail(showError) {
     const value = emailInput.value.trim();
     if (value === '') {
@@ -74,7 +84,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   emailInput.addEventListener('input', function () {
-  
+    // Don't flare up an error while they're still mid-way through
+    // typing (e.g. "saisha@") - only block clearly invalid characters.
     const value = emailInput.value;
     const hasInvalidChar = /[^A-Za-z0-9._%+\-@]/.test(value);
     const startsWithDigit = /^\d/.test(value);
@@ -90,6 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   emailInput.addEventListener('blur', function () { fields.email.touched = true; validateEmail(true); });
 
+  // ---------- Phone Number ----------
   function validatePhone(showError) {
     const value = phoneInput.value.trim();
     if (value === '') {
@@ -110,8 +122,8 @@ document.addEventListener('DOMContentLoaded', function () {
     return ok;
   }
 
-    phoneInput.addEventListener('input', function () {
-
+  phoneInput.addEventListener('input', function () {
+    // Strip any non-digit character as they type
     phoneInput.value = phoneInput.value.replace(/\D/g, '').slice(0, 10);
     const value = phoneInput.value;
 
@@ -120,6 +132,8 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
+    // As soon as what's typed so far can no longer become "97" or "98",
+    // flag it right away - even after just the first digit.
     const prefixSoFar = value.slice(0, 2);
     const stillPossible = '97'.startsWith(prefixSoFar) || '98'.startsWith(prefixSoFar);
 
@@ -131,9 +145,9 @@ document.addEventListener('DOMContentLoaded', function () {
       setState('phone', true, '');
     }
   });
-  
   phoneInput.addEventListener('blur', function () { fields.phone.touched = true; validatePhone(true); });
 
+  // ---------- Password ----------
   function validatePassword(showError) {
     const value = passwordInput.value;
     if (value === '') {
@@ -164,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
   passwordInput.addEventListener('input', function () { validatePassword(fields.password.touched); });
   passwordInput.addEventListener('blur', function () { fields.password.touched = true; validatePassword(true); });
 
+  // ---------- Enter key moves to the next field ----------
   const validators = {
     full_name: validateName,
     email: validateEmail,
@@ -188,6 +203,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // ---------- Final check on submit ----------
   form.addEventListener('submit', function (e) {
     let allValid = true;
     order.forEach(function (name) {
@@ -197,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!allValid) e.preventDefault();
   });
 
-
+  // ---------- Show/hide password ----------
   document.querySelectorAll('.password-toggle').forEach(function (btn) {
     btn.addEventListener('click', function () {
       const target = document.getElementById(btn.dataset.target);

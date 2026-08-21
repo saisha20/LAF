@@ -17,9 +17,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please enter both email and password.';
     } else {
 
-        $stmt = $pdo->prepare('SELECT user_id, full_name, email, password_hash, role FROM users WHERE email = ? LIMIT 1');
-        $stmt->execute([$email]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+       $stmt = $pdo->prepare('SELECT admin_id AS user_id, full_name, email, password_hash, role FROM admin WHERE email = ? LIMIT 1');
+$stmt->execute([$email]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if (!$user) {
+    $stmt = $pdo->prepare('SELECT user_id, full_name, email, password_hash, role FROM users WHERE email = ? LIMIT 1');
+    $stmt->execute([$email]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+}
 
         if ($user && password_verify($password, $user['password_hash'])) {
       
@@ -41,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="UTF-8">
 <title>Login - Foundly</title>
 <link rel="stylesheet" href="base.css">
-<link rel="stylesheet" href="auth.css">
+<link rel="stylesheet" href="auth.css?v=2">
 <link rel="stylesheet" href="login.css">
 </head>
 <body>
