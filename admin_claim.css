@@ -1,0 +1,59 @@
+/* admin_claim.css - Claim Verification page only */
+
+.claim-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 20px;
+  align-items: start;
+  margin-top: 20px;
+}
+
+.claim-main .form-card {
+  margin-bottom: 18px;
+}
+
+.claim-side .form-card {
+  margin-bottom: 14px;
+}
+
+.claim-label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.evidence-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.evidence-box {
+  background: #f7f8fb;
+  border: 1px solid var(--border-gray);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--text-dark);
+  font-style: italic;
+  min-height: 60px;
+}
+
+.admin-phone-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f7f8fb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 10px 0 6px;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .claim-grid { grid-template-columns: 1fr; }
+  .evidence-grid { grid-template-columns: 1fr; }
+}

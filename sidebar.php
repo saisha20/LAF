@@ -7,6 +7,7 @@ $navItems = [
     'search'        => ['label' => 'Search Items',  'href' => 'search_items.php',   'icon' => '&#128269;'],
     'post'          => ['label' => 'Post Item',      'href' => 'report_lost.php',    'icon' => '&#10133;'],
     'reports'       => ['label' => 'Reports',        'href' => 'my_reports.php',     'icon' => '&#128203;'],
+     'claims'        => ['label' => 'My Claims',      'href' => 'my_claims.php',      'icon' => '&#128196;'],
     'notifications' => ['label' => 'Notifications',  'href' => 'notifications.php',  'icon' => '&#128276;'],
     'profile'       => ['label' => 'Profile',        'href' => 'profile.php',        'icon' => '&#128100;'],
 ];

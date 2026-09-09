@@ -6,6 +6,7 @@ requireLogin();
 
 $uid = $_SESSION['user_id'];
 
+// Delete own report
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_report_id'])) {
     $stmt = $pdo->prepare('DELETE FROM reports WHERE report_id = ? AND user_id = ?');
     $stmt->execute([$_POST['delete_report_id'], $uid]);
@@ -13,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_report_id'])) 
     exit;
 }
 
+// ---- Stats (real data) ----
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM reports WHERE user_id = ? AND status = 'open'");
 $stmt->execute([$uid]);
 $activeCount = (int)$stmt->fetchColumn();
@@ -27,8 +29,9 @@ $stmt = $pdo->prepare(
 $stmt->execute([$uid, $uid]);
 $matchedCount = (int)$stmt->fetchColumn();
 
+// ---- "Found a match?" banner - a real pending match on one of the user's reports ----
 $stmt = $pdo->prepare(
-    "SELECT r.report_id, r.item_name
+    "SELECT m.match_id, r.report_id, r.item_name
      FROM matches m
      JOIN reports r ON r.report_id = m.lost_report_id OR r.report_id = m.found_report_id
      WHERE r.user_id = ? AND m.status = 'pending'
@@ -37,6 +40,7 @@ $stmt = $pdo->prepare(
 $stmt->execute([$uid]);
 $pendingMatch = $stmt->fetch(PDO::FETCH_ASSOC);
 
+// ---- Filters ----
 $typeFilter = $_GET['type'] ?? 'all'; // all | lost | found
 $search     = trim($_GET['q'] ?? '');
 $page       = max(1, (int)($_GET['page'] ?? 1));
@@ -83,7 +87,10 @@ require 'sidebar.php';
     <h1>My Reports</h1>
     <p class="page-sub">Track the status of items you've reported as lost or found within the university campus.</p>
   </div>
-  <a href="report_lost.php" class="btn btn-navy">+ New Report</a>
+  <div style="display:flex;gap:10px;">
+    <a href="my_claims.php" class="btn btn-outline">My Claims</a>
+    <a href="report_lost.php" class="btn btn-navy">+ New Report</a>
+  </div>
 </div>
 
 <?php if (isset($_GET['deleted'])): ?>
@@ -106,7 +113,7 @@ require 'sidebar.php';
         <strong>Found a match?</strong>
         <p>One of your reports for "<?php echo htmlspecialchars($pendingMatch['item_name']); ?>" has a potential match. Review it now.</p>
       </div>
-      <a href="report_details.php?id=<?php echo $pendingMatch['report_id']; ?>" class="btn" style="background:#fff;color:var(--navy);">Review Now</a>
+      <a href="claim_submit.php?match_id=<?php echo $pendingMatch['match_id']; ?>" class="btn" style="background:#fff;color:var(--navy);">Review Now</a>
     </div>
   <?php else: ?>
     <div class="match-banner match-banner-empty">
@@ -209,4 +216,3 @@ require 'sidebar.php';
     </div>
   </div>
 </div>
-
