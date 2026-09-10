@@ -21,6 +21,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_match'])) {
         } else {
             $stmt = $pdo->prepare('INSERT INTO matches (lost_report_id, found_report_id, status) VALUES (?, ?, "pending")');
             $stmt->execute([$lostId, $foundId]);
+
+            // Notify both reporters that a possible match was spotted
+            $stmt = $pdo->prepare('SELECT report_id, user_id, item_name FROM reports WHERE report_id IN (?, ?)');
+            $stmt->execute([$lostId, $foundId]);
+            $bothReports = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($bothReports as $r) {
+                $otherReportId = ($r['report_id'] == $lostId) ? $foundId : $lostId;
+                $pdo->prepare(
+                    'INSERT INTO notifications (user_id, type, title, message, link_report_id)
+                     VALUES (?, "potential_match", "New Potential Match", ?, ?)'
+                )->execute([
+                    $r['user_id'],
+                    "An admin spotted a possible match for \"{$r['item_name']}\". Take a look and confirm if it's right.",
+                    $otherReportId,
+                ]);
+            }
+
             $success = 'Match proposed. Compare the descriptions below and verify or reject it.';
         }
     }
@@ -63,8 +81,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_match_id'])) {
 
 // ---- Reject a match ----
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reject_match_id'])) {
-    $stmt = $pdo->prepare('UPDATE matches SET status = "rejected" WHERE match_id = ?');
-    $stmt->execute([(int)$_POST['reject_match_id']]);
+    $matchId = (int)$_POST['reject_match_id'];
+
+    $stmt = $pdo->prepare('SELECT lost_report_id, found_report_id FROM matches WHERE match_id = ?');
+    $stmt->execute([$matchId]);
+    $m = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $pdo->prepare('UPDATE matches SET status = "rejected" WHERE match_id = ?')->execute([$matchId]);
+
+    if ($m) {
+        // Let both sides know this particular pairing didn't work out
+        $stmt = $pdo->prepare('SELECT report_id, user_id, item_name FROM reports WHERE report_id IN (?, ?)');
+        $stmt->execute([$m['lost_report_id'], $m['found_report_id']]);
+        $bothReports = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($bothReports as $r) {
+            $pdo->prepare(
+                'INSERT INTO notifications (user_id, type, title, message, link_report_id)
+                 VALUES (?, "system", "Match Not Confirmed", ?, ?)'
+            )->execute([
+                $r['user_id'],
+                "The proposed match for \"{$r['item_name']}\" wasn't confirmed. Your report is still open.",
+                $r['report_id'],
+            ]);
+        }
+    }
+
     $success = 'Match rejected. Both reports remain open.';
 }
 
@@ -188,5 +230,3 @@ $verified = $pdo->query(
     </table>
   </div>
 <?php endif; ?>
-
-<?php require 'admin_footer.php'; ?>

@@ -32,6 +32,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['claim_lost_report_id'
             $stmt = $pdo->prepare('INSERT INTO matches (lost_report_id, found_report_id, status) VALUES (?, ?, "pending")');
             $stmt->execute([$lostReportId, $reportId]);
             $matchId = $pdo->lastInsertId();
+
+            // Let the finder know someone believes this is their item
+            $stmt = $pdo->prepare('SELECT user_id, item_name FROM reports WHERE report_id = ?');
+            $stmt->execute([$reportId]);
+            $foundReport = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($foundReport) {
+                $pdo->prepare(
+                    'INSERT INTO notifications (user_id, type, title, message, link_report_id)
+                     VALUES (?, "claim_review", "Someone Claimed Your Found Item", ?, ?)'
+                )->execute([
+                    $foundReport['user_id'],
+                    "Someone believes the \"{$foundReport['item_name']}\" you found is theirs. An admin will review their evidence shortly.",
+                    $lostReportId,
+                ]);
+            }
         }
 
         header('Location: claim_submit.php?match_id=' . $matchId);
@@ -51,14 +67,6 @@ $stmt = $pdo->prepare(
 );
 $stmt->execute([$reportId]);
 $item = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (isset($_GET['debug'])) {
-    echo '<pre style="background:#fff;padding:20px;font-size:13px;">';
-    echo 'reportId variable: ' . var_export($reportId, true) . "\n\n";
-    print_r($item);
-    echo '</pre>';
-    exit;
-}
 
 $pageTitle  = 'Item Details';
 $activePage = 'search';

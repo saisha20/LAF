@@ -54,6 +54,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$notOwner && !$notPending) {
             }
             $success = 'Your claim has been submitted. An admin will review it shortly.';
 
+            // Confirm to the claimant that their evidence is now under review
+            $pdo->prepare(
+                'INSERT INTO notifications (user_id, type, title, message, link_report_id)
+                 VALUES (?, "claim_review", "Claim Under Review", ?, ?)'
+            )->execute([
+                $_SESSION['user_id'],
+                "The admin is currently reviewing your evidence for \"{$match['lost_item']}\". This usually takes 24-48 hours.",
+                $match['found_report_id'],
+            ]);
+
             // Refresh $match so the page shows what was just saved
             $stmt = $pdo->prepare('SELECT * FROM matches WHERE match_id = ?');
             $stmt->execute([$matchId]);
@@ -126,5 +136,3 @@ require 'sidebar.php';
   </form>
 
 <?php endif; ?>
-
-<?php require 'dashboard_footer.php'; ?>
