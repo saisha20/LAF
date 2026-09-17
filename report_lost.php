@@ -2,12 +2,12 @@
 require_once 'auth.php';
 require_once 'db.php';
 requireLogin();
-
+ 
 $categories = $pdo->query('SELECT category_id, category_name FROM categories ORDER BY category_name')->fetchAll(PDO::FETCH_ASSOC);
-
+ 
 $error = '';
-$old = ['item_name' => '', 'category_id' => '', 'description' => '', 'color' => '', 'brand' => '', 'reward_amount' => '', 'date_lost' => '', 'condition_status' => 'new'];
-
+$old = ['item_name' => '', 'category_id' => '', 'description' => '', 'color' => '', 'brand' => '', 'reward_amount' => '', 'date_lost' => '', 'condition_status' => 'new', 'location' => ''];
+ 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $old['item_name']     = trim($_POST['item_name'] ?? '');
     $old['category_id']   = $_POST['category_id'] ?? '';
@@ -17,8 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $old['reward_amount'] = trim($_POST['reward_amount'] ?? '');
     $old['date_lost']        = trim($_POST['date_lost'] ?? '');
     $old['condition_status'] = $_POST['condition_status'] ?? 'new';
+    $old['location']         = trim($_POST['location'] ?? '');
     $isPublic             = isset($_POST['is_public']) ? 1 : 0;
-
+ 
     if ($old['item_name'] === '') {
         $error = 'Please enter the item name.';
     } elseif ($old['category_id'] === '') {
@@ -31,10 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Date lost cannot be in the future.';
     } elseif (!in_array($old['condition_status'], ['new', 'good', 'fair', 'poor'], true)) {
         $error = 'Please choose a valid condition.';
+    } elseif ($old['location'] === '') {
+        $error = 'Please enter where you last saw the item.';
     } elseif ($old['reward_amount'] !== '' && !is_numeric($old['reward_amount'])) {
         $error = 'Reward must be a number.';
     }
-
+ 
     // Optional photo upload -> stored directly in the database
     $photoData = null;
     $photoType = null;
@@ -50,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $photoType = $type;
         }
     }
-
+ 
     if ($error === '') {
         $stmt = $pdo->prepare(
             'INSERT INTO reports
@@ -68,36 +71,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $old['brand'] !== '' ? $old['brand'] : null,
             $old['reward_amount'] !== '' ? $old['reward_amount'] : null,
             $old['condition_status'],
-            'Not specified', // no location field in this form; kept for schema compatibility
+            $old['location'],
             $old['date_lost'],
             $isPublic,
             $photoData,
             $photoType,
         ]);
-
+ 
         header('Location: user_dashboard.php?reported=lost');
         exit;
     }
 }
-
+ 
 $pageTitle  = 'Report Lost Item';
 $activePage = 'post';
 require 'sidebar.php';
 ?>
-
+ 
 <h1>Report Lost Item</h1>
 <p class="page-sub">Help the community find your belongings. Provide as much detail as possible to increase the chances of a successful recovery.</p>
-
+ 
 <?php if ($error): ?>
   <div class="form-alert error" style="max-width:700px;"><?php echo htmlspecialchars($error); ?></div>
 <?php endif; ?>
-
+ 
 <form method="POST" action="report_lost.php" enctype="multipart/form-data">
   <div class="form-grid">
-
+ 
     <div class="form-card">
       <h2>&#9432; Item Essentials</h2>
-
+ 
       <div class="field-row">
         <div class="field">
           <label for="item_name">Item Name</label>
@@ -115,12 +118,12 @@ require 'sidebar.php';
           </select>
         </div>
       </div>
-
+ 
       <div class="field">
         <label for="description">Description</label>
         <textarea id="description" name="description" rows="4" placeholder="Describe unique markings, scratches, or contents inside..."><?php echo htmlspecialchars($old['description']); ?></textarea>
       </div>
-
+ 
       <div class="field-row">
         <div class="field">
           <label for="date_lost">Date Lost</label>
@@ -135,7 +138,12 @@ require 'sidebar.php';
           </select>
         </div>
       </div>
-
+ 
+      <div class="field">
+        <label for="location">Last Seen Location (Building/Room)</label>
+        <input type="text" id="location" name="location" placeholder="e.g. Seminar Hall, Block C" value="<?php echo htmlspecialchars($old['location']); ?>">
+      </div>
+ 
       <div class="field-row three">
         <div class="field">
           <label for="color">Color</label>
@@ -151,26 +159,26 @@ require 'sidebar.php';
         </div>
       </div>
     </div>
-
+ 
     <div>
       <div class="form-card">
         <h2>&#128247; Visual Proof</h2>
         <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px;">Upload a photo of the item or a similar stock image to help identification.</p>
-
+ 
         <label class="upload-zone" for="photo">
           <span class="upload-icon">&#9729;</span>
           <strong>Drag and drop images</strong>
           or click to browse files
         </label>
         <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="previewPhoto(this)">
-
+ 
         <div class="photo-slots">
           <label for="photo" class="photo-slot"><img id="photoPreview" alt=""></label>
           <span class="photo-slot disabled">&#128247;</span>
           <span class="photo-slot disabled">&#128247;</span>
         </div>
       </div>
-
+ 
       <div class="form-card" style="margin-top:16px;">
         <h2>&#128737; Visibility</h2>
         <div class="toggle-row">
@@ -187,16 +195,16 @@ require 'sidebar.php';
           &#128274; Your personal contact details are hidden until you approve a claim request.
         </div>
       </div>
-
+ 
       <div class="form-actions">
         <button type="submit" class="btn btn-navy btn-block">&#9654; Submit Report</button>
         <button type="button" class="btn btn-outline btn-block" disabled title="Coming soon">Save Draft</button>
       </div>
     </div>
-
+ 
   </div>
 </form>
-
+ 
 <script>
 function previewPhoto(input) {
   const preview = document.getElementById('photoPreview');
@@ -206,5 +214,4 @@ function previewPhoto(input) {
   }
 }
 </script>
-
-
+ 
