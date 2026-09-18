@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <section class="hero">
   <div class="hero-text">
-    <h1>Reuniting people<br>With their<br>Belongings</h1>
+    <h1>Reuniting people<br>with their<br>Belongings</h1>
     <p>Report lost items, submit found objects and track claims, all in one place for Kathford International College.</p>
     <div class="hero-actions">
       <a href="report_lost.php" class="btn btn-navy">Report Lost &rarr;</a>
