@@ -20,6 +20,8 @@ $navItems = [
     'claims'        => ['label' => 'My Claims',      'href' => 'my_claims.php',      'icon' => '&#128196;'],
     'notifications' => ['label' => 'Notifications',  'href' => 'notifications.php',  'icon' => '&#128276;'],
     'profile'       => ['label' => 'Profile',        'href' => 'profile.php',        'icon' => '&#128100;'],
+    'settings'      => ['label' => 'Settings',       'href' => 'settings.php',       'icon' => '&#9881;']
+
 ];
 ?>
 <!DOCTYPE html>
@@ -82,8 +84,9 @@ $navItems = [
         <input type="text" placeholder="Search for items, locations...">
       </div>
 <div class="topbar-actions">
-    <span class="topbar-icon">&#128276;</span>
-    <span class="topbar-icon">&#9881;</span>
+    <a href="settings.php" class="topbar-icon" title="Account Settings">&#9881;</a>
+
+    <a href="notifications.php" class="topbar-icon" title="Notifications">&#128276;</a>
 
     <a href="profile.php" class="topbar-avatar" title="Profile">
         <?php echo strtoupper(substr($_SESSION['full_name'], 0, 1)); ?>

@@ -162,17 +162,3 @@ require 'sidebar.php';
       <a href="report_lost.php" class="new-report-btn">+ New Report</a>
     </div>
 
-    <div class="form-card" style="margin-top:16px;">
-      <h2>&#9881; Account Settings</h2>
-      <div class="settings-row">
-        <span>&#128273; Change Password</span>
-        <span style="color:var(--text-muted);">&rsaquo;</span>
-      </div>
-      <div class="settings-row">
-        <span>&#128276; Notification Preferences</span>
-        <span style="color:var(--text-muted);">&rsaquo;</span>
-      </div>
-      <p style="font-size:11px;color:var(--text-muted);margin-top:8px;">Not available yet.</p>
-    </div>
-  </div>
-</div>
