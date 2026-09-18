@@ -29,8 +29,8 @@ $navItems = [
 <title><?php echo htmlspecialchars($pageTitle); ?> - Foundly</title>
 <link rel="stylesheet" href="base.css">
 <link rel="stylesheet" href="dashboard.css">
-<link rel="stylesheet" href="sidebar.css?v=2">
-<link rel="stylesheet" href="user_menu.css">
+<link rel="stylesheet" href="sidebar.css?v=3">
+
 </head>
 <body>
 
@@ -81,19 +81,16 @@ $navItems = [
         <span>&#128269;</span>
         <input type="text" placeholder="Search for items, locations...">
       </div>
-      <div class="topbar-actions">
-        <span class="topbar-icon">&#128276;</span>
-        <span class="topbar-icon">&#9881;</span>
-        <div class="user-menu">
-          <button type="button" class="topbar-avatar" onclick="toggleUserMenu()" title="<?php echo htmlspecialchars($_SESSION['full_name']); ?>">
-            <?php echo strtoupper(substr($_SESSION['full_name'], 0, 1)); ?>
-          </button>
-          <div class="user-menu-dropdown" id="userMenuDropdown">
-            <a href="profile.php">Profile</a>
-            <a href="logout.php">Logout</a>
-          </div>
-        </div>
-      </div>
+<div class="topbar-actions">
+    <span class="topbar-icon">&#128276;</span>
+    <span class="topbar-icon">&#9881;</span>
+
+    <a href="profile.php" class="topbar-avatar" title="Profile">
+        <?php echo strtoupper(substr($_SESSION['full_name'], 0, 1)); ?>
+    </a>
+
+    <a href="logout.php" class="logout-btn">Logout</a>
+</div>
     </header>
 
     <main class="dash-main">
