@@ -53,27 +53,64 @@ require 'sidebar.php';
   <div class="contact-card-wrap">
     <div class="contact-check-icon">&#10003;</div>
     <h1 style="text-align:center;">Match Verified!</h1>
-    <p class="page-sub" style="text-align:center;">Contact details have been securely shared between parties to facilitate the item return.</p>
+    <?php
+      $viewerIsLost  = (int)$uid === (int)$match['lost_user_id'];
+      $viewerIsFound = (int)$uid === (int)$match['found_user_id'];
+
+      if ($viewerIsLost) {
+          $subtitleText = 'Contact details of the finder have been shared with you to facilitate the item return.';
+      } elseif ($viewerIsFound) {
+          $subtitleText = 'Contact details of the property owner have been shared with you to facilitate the item return.';
+      } else {
+          $subtitleText = 'Contact details have been securely shared between parties to facilitate the item return.';
+      }
+    ?>
+    <p class="page-sub" style="text-align:center;"><?php echo htmlspecialchars($subtitleText); ?></p>
 
     <div class="contact-cards-row">
-      <div class="contact-card">
-        <div class="contact-card-label">&#128100; PROPERTY OWNER</div>
-        <div class="contact-sub">Owner's Phone</div>
-        <div class="contact-phone"><?php echo htmlspecialchars($match['owner_phone']); ?></div>
-        <div class="contact-actions">
-          <a href="tel:<?php echo htmlspecialchars($match['owner_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
-          <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['owner_phone']); ?>')">&#128203; Copy</button>
+      <?php if ($isAdminViewer && !$viewerIsLost && !$viewerIsFound): ?>
+        <!-- Admin viewing for audit purposes sees both sides -->
+        <div class="contact-card">
+          <div class="contact-card-label">&#128100; PROPERTY OWNER</div>
+          <div class="contact-sub">Owner's Phone</div>
+          <div class="contact-phone"><?php echo htmlspecialchars($match['owner_phone']); ?></div>
+          <div class="contact-actions">
+            <a href="tel:<?php echo htmlspecialchars($match['owner_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
+            <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['owner_phone']); ?>')">&#128203; Copy</button>
+          </div>
         </div>
-      </div>
-      <div class="contact-card">
-        <div class="contact-card-label">&#128269; ITEM FINDER</div>
-        <div class="contact-sub">Finder's Phone</div>
-        <div class="contact-phone"><?php echo htmlspecialchars($match['finder_phone']); ?></div>
-        <div class="contact-actions">
-          <a href="tel:<?php echo htmlspecialchars($match['finder_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
-          <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['finder_phone']); ?>')">&#128203; Copy</button>
+        <div class="contact-card">
+          <div class="contact-card-label">&#128269; ITEM FINDER</div>
+          <div class="contact-sub">Finder's Phone</div>
+          <div class="contact-phone"><?php echo htmlspecialchars($match['finder_phone']); ?></div>
+          <div class="contact-actions">
+            <a href="tel:<?php echo htmlspecialchars($match['finder_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
+            <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['finder_phone']); ?>')">&#128203; Copy</button>
+          </div>
         </div>
-      </div>
+      <?php elseif ($viewerIsLost): ?>
+        <!-- Lost item's owner only needs the finder's contact -->
+        <div class="contact-card" style="grid-column: 1 / -1; text-align:center;">
+          <div class="contact-card-label" style="justify-content:center;display:flex;">&#128269; ITEM FINDER</div>
+          <div class="contact-sub">Finder's Phone</div>
+          <div class="contact-phone"><?php echo htmlspecialchars($match['finder_phone']); ?></div>
+          <div class="contact-actions" style="justify-content:center;">
+            <a href="tel:<?php echo htmlspecialchars($match['finder_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
+            <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['finder_phone']); ?>')">&#128203; Copy</button>
+          </div>
+        </div>
+      <?php else: ?>
+        <!-- Finder only needs the lost item's owner's contact -->
+        <div class="contact-card" style="grid-column: 1 / -1; text-align:center;">
+          <div class="contact-card-label" style="justify-content:center;display:flex;">&#128100; PROPERTY OWNER</div>
+          <div class="contact-sub">Owner's Phone</div>
+          <div class="contact-phone"><?php echo htmlspecialchars($match['owner_phone']); ?></div>
+          <div class="contact-actions" style="justify-content:center;">
+            <a href="tel:<?php echo htmlspecialchars($match['owner_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
+            <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['owner_phone']); ?>')">&#128203; Copy</button>
+          </div>
+        </div>
+      <?php endif; ?>
     </div>
 
     <div class="sms-note">
@@ -82,24 +119,9 @@ require 'sidebar.php';
     </div>
 
     <div class="print-actions">
-      <button type="button" class="btn btn-navy" onclick="window.print()">&#128424; Print Receipt</button>
       <a href="notifications.php" class="btn btn-outline">&larr; Back</a>
     </div>
 
-    <div class="info-tiles-row">
-      <div class="info-tile">
-        <strong>&#128274; Secure Transfer</strong>
-        <p>Data is only shared with the two verified members of this match.</p>
-      </div>
-      <div class="info-tile">
-        <strong>&#128203; Audit Logged</strong>
-        <p>This verification is recorded and tied to the admin who approved it.</p>
-      </div>
-      <div class="info-tile">
-        <strong>&#128172; Need Help?</strong>
-        <p>Use the Support Center link on your Reports page if something's wrong.</p>
-      </div>
-    </div>
   </div>
 
   <script>

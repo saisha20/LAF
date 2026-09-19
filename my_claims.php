@@ -106,7 +106,7 @@ require 'sidebar.php';
           </div>
 
           <?php if ($c['status'] === 'verified'): ?>
-            <a href="report_details.php?id=<?php echo $c['found_report_id']; ?>" class="btn btn-navy btn-block">Get Contact Detail of the Finder</a>
+            <a href="contact_info.php?report_id=<?php echo $c['found_report_id']; ?>" class="btn btn-navy btn-block">Get Contact Detail of the Finder</a>
           <?php elseif ($c['status'] === 'rejected'): ?>
             <a href="report_details.php?id=<?php echo $c['found_report_id']; ?>" class="btn btn-outline btn-block">View Details</a>
           <?php elseif (!$hasEvidence): ?>
