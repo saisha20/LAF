@@ -95,6 +95,7 @@ require 'sidebar.php';
     <?php foreach ($items as $n):
         [$icon, $bg, $fg] = $typeIcon[$n['type']];
         $redirect = 'report_details.php?id=' . (int)$n['link_report_id'];
+        $contactRedirect = 'contact_info.php?report_id=' . (int)$n['link_report_id'];
     ?>
       <div class="notif-card <?php echo $n['is_read'] ? '' : 'notif-unread'; ?>">
         <span class="notif-icon" style="background:<?php echo $bg; ?>;color:<?php echo $fg; ?>;"><?php echo $icon; ?></span>
@@ -107,7 +108,7 @@ require 'sidebar.php';
 
           <div class="notif-actions">
             <?php if ($n['type'] === 'match_approved'): ?>
-              <a href="?read=<?php echo $n['notification_id']; ?>&redirect=<?php echo urlencode($redirect); ?>&tab=<?php echo $tab; ?>" class="btn btn-navy" style="padding:8px 14px;font-size:12px;">Contact Info</a>
+              <a href="?read=<?php echo $n['notification_id']; ?>&redirect=<?php echo urlencode($contactRedirect); ?>&tab=<?php echo $tab; ?>" class="btn btn-navy" style="padding:8px 14px;font-size:12px;">Contact Info</a>
               <a href="?read=<?php echo $n['notification_id']; ?>&redirect=<?php echo urlencode($redirect); ?>&tab=<?php echo $tab; ?>" class="btn btn-outline" style="padding:8px 14px;font-size:12px;">View Item Details</a>
             <?php elseif ($n['type'] === 'potential_match'): ?>
               <a href="?read=<?php echo $n['notification_id']; ?>&redirect=<?php echo urlencode($redirect); ?>&tab=<?php echo $tab; ?>" class="btn btn-navy" style="padding:8px 14px;font-size:12px;">View Match</a>
