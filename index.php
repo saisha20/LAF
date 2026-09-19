@@ -77,7 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <header class="site-header">
   <div class="brand">
-    <div class="brand-icon">&#9737;</div>
+    <div class="brand-icon">
+    <img src="images/foundly-logo.png" alt="Foundly Logo">
+</div>
     <div class="brand-text">
       <span class="brand-name">Foundly</span>
       <span class="brand-tagline">Reliable Recovery</span>

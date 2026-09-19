@@ -2,6 +2,7 @@
 $pageTitle = 'Verify Matches';
 $activeAdminPage = 'matches';
 require 'admin_header.php';
+require_once 'match_helper.php';
 
 $error = '';
 $success = '';
@@ -19,26 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_match'])) {
         if ($stmt->fetch()) {
             $error = 'A match between these two reports already exists.';
         } else {
-            $stmt = $pdo->prepare('INSERT INTO matches (lost_report_id, found_report_id, status) VALUES (?, ?, "pending")');
-            $stmt->execute([$lostId, $foundId]);
-
-            // Notify both reporters that a possible match was spotted
-            $stmt = $pdo->prepare('SELECT report_id, user_id, item_name FROM reports WHERE report_id IN (?, ?)');
-            $stmt->execute([$lostId, $foundId]);
-            $bothReports = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            foreach ($bothReports as $r) {
-                $otherReportId = ($r['report_id'] == $lostId) ? $foundId : $lostId;
-                $pdo->prepare(
-                    'INSERT INTO notifications (user_id, type, title, message, link_report_id)
-                     VALUES (?, "potential_match", "New Potential Match", ?, ?)'
-                )->execute([
-                    $r['user_id'],
-                    "An admin spotted a possible match for \"{$r['item_name']}\". Take a look and confirm if it's right.",
-                    $otherReportId,
-                ]);
-            }
-
+            create_match_with_notification($pdo, $lostId, $foundId);
             $success = 'Match proposed. Compare the descriptions below and verify or reject it.';
         }
     }
@@ -48,32 +30,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['create_match'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_match_id'])) {
     $matchId = (int)$_POST['verify_match_id'];
 
-    $stmt = $pdo->prepare('SELECT lost_report_id, found_report_id FROM matches WHERE match_id = ?');
+    $stmt = $pdo->prepare('SELECT lost_report_id, found_report_id, status FROM matches WHERE match_id = ?');
     $stmt->execute([$matchId]);
     $m = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($m) {
+    if ($m && $m['status'] !== 'verified') {
         $pdo->prepare('UPDATE matches SET status = "verified", verified_by = ?, verified_at = NOW() WHERE match_id = ?')
             ->execute([$_SESSION['user_id'], $matchId]);
         $pdo->prepare('UPDATE reports SET status = "matched" WHERE report_id IN (?, ?)')
             ->execute([$m['lost_report_id'], $m['found_report_id']]);
 
-        // Notify both reporters that contact details are now unlocked
-        $stmt = $pdo->prepare('SELECT report_id, user_id, item_name FROM reports WHERE report_id IN (?, ?)');
-        $stmt->execute([$m['lost_report_id'], $m['found_report_id']]);
-        $bothReports = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach ($bothReports as $r) {
-            $otherReportId = ($r['report_id'] == $m['lost_report_id']) ? $m['found_report_id'] : $m['lost_report_id'];
-            $pdo->prepare(
-                'INSERT INTO notifications (user_id, type, title, message, link_report_id)
-                 VALUES (?, "match_approved", "Match Approved", ?, ?)'
-            )->execute([
-                $r['user_id'],
-                "Your claim for \"{$r['item_name']}\" has been approved. Contact details are now unlocked.",
-                $otherReportId,
-            ]);
-        }
+        notify_match_verified($pdo, $m['lost_report_id'], $m['found_report_id']);
 
         $success = 'Match verified. Both users can now see each other\'s contact details.';
     }
@@ -83,31 +50,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_match_id'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reject_match_id'])) {
     $matchId = (int)$_POST['reject_match_id'];
 
-    $stmt = $pdo->prepare('SELECT lost_report_id, found_report_id FROM matches WHERE match_id = ?');
+    $stmt = $pdo->prepare('SELECT lost_report_id, found_report_id, status FROM matches WHERE match_id = ?');
     $stmt->execute([$matchId]);
     $m = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $pdo->prepare('UPDATE matches SET status = "rejected" WHERE match_id = ?')->execute([$matchId]);
-
-    if ($m) {
-        // Let both sides know this particular pairing didn't work out
-        $stmt = $pdo->prepare('SELECT report_id, user_id, item_name FROM reports WHERE report_id IN (?, ?)');
-        $stmt->execute([$m['lost_report_id'], $m['found_report_id']]);
-        $bothReports = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach ($bothReports as $r) {
-            $pdo->prepare(
-                'INSERT INTO notifications (user_id, type, title, message, link_report_id)
-                 VALUES (?, "system", "Match Not Confirmed", ?, ?)'
-            )->execute([
-                $r['user_id'],
-                "The proposed match for \"{$r['item_name']}\" wasn't confirmed. Your report is still open.",
-                $r['report_id'],
-            ]);
-        }
+    if ($m && $m['status'] !== 'rejected') {
+        $pdo->prepare('UPDATE matches SET status = "rejected" WHERE match_id = ?')->execute([$matchId]);
+        notify_match_rejected($pdo, $m['lost_report_id'], $m['found_report_id']);
+        $success = 'Match rejected. Both reports remain open.';
     }
-
-    $success = 'Match rejected. Both reports remain open.';
 }
 
 // ---- Data for the page ----

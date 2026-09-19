@@ -1,6 +1,7 @@
 <?php
 require_once 'auth.php';
 require_once 'db.php';
+require_once 'match_helper.php';
 requireLogin();
 
 $categories = $pdo->query('SELECT category_id, category_name FROM categories ORDER BY category_name')->fetchAll(PDO::FETCH_ASSOC);
@@ -73,7 +74,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $photoData,
             $photoType,
         ]);
-
+$newReportId = $pdo->lastInsertId();
+        $bestMatch = find_best_match_for_report($pdo, $newReportId);
+        if ($bestMatch) {
+            create_match_with_notification($pdo, $bestMatch['report_id'], $newReportId);
+         }
         header('Location: user_dashboard.php?reported=found');
         exit;
     }
