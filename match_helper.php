@@ -147,9 +147,9 @@ function notify_match_verified($pdo, $lostReportId, $foundReportId) {
         $otherReportId = ($r['report_id'] == $lostReportId) ? $foundReportId : $lostReportId;
 
         if ($r['report_id'] == $lostReportId) {
-            $message = "The match for your lost item has been verified by the admin. (\"{$r['item_name']}\")";
+            $message = 'The match for your lost item has been verified by the admin.';
         } else {
-            $message = "The match for your found item has been verified by the admin. (\"{$r['item_name']}\")";
+            $message = 'The match for your found item has been verified by the admin.';
         }
 
         $pdo->prepare(
@@ -171,9 +171,9 @@ function notify_match_rejected($pdo, $lostReportId, $foundReportId) {
 
     foreach ($reports as $r) {
         if ($r['report_id'] == $lostReportId) {
-            $message = "The match for your lost item has been rejected by the admin. Your report is still open. (\"{$r['item_name']}\")";
+            $message = 'Your item match has been rejected by the admin.';
         } else {
-            $message = "The match for your found item has been rejected by the admin. Your report is still open. (\"{$r['item_name']}\")";
+            $message = 'The match for your found item has been rejected by the admin.';
         }
 
         $pdo->prepare(
