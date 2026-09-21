@@ -29,6 +29,19 @@ $match = $stmt->fetch(PDO::FETCH_ASSOC);
 $isAdminViewer = isAdmin();
 $isParty = $match && ((int)$uid === (int)$match['lost_user_id'] || (int)$uid === (int)$match['found_user_id']);
 
+/**
+ * Builds a wa.me link from a locally-stored 10-digit phone number.
+ * Assumes Nepali numbers with no country code saved in the DB.
+ */
+function whatsapp_link($phone) {
+    $digits = preg_replace('/\D+/', '', $phone);
+    // Only prepend the country code if it isn't already there
+    if (substr($digits, 0, 3) !== '977') {
+        $digits = '977' . $digits;
+    }
+    return 'https://wa.me/' . $digits;
+}
+
 $pageTitle  = 'Contact Information';
 $activePage = 'notifications';
 require 'sidebar.php';
@@ -76,6 +89,7 @@ require 'sidebar.php';
           <div class="contact-phone"><?php echo htmlspecialchars($match['owner_phone']); ?></div>
           <div class="contact-actions">
             <a href="tel:<?php echo htmlspecialchars($match['owner_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
+            <a href="<?php echo htmlspecialchars(whatsapp_link($match['owner_phone'])); ?>" target="_blank" rel="noopener" class="btn btn-outline">&#128172; WhatsApp</a>
             <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['owner_phone']); ?>')">&#128203; Copy</button>
           </div>
         </div>
@@ -85,6 +99,7 @@ require 'sidebar.php';
           <div class="contact-phone"><?php echo htmlspecialchars($match['finder_phone']); ?></div>
           <div class="contact-actions">
             <a href="tel:<?php echo htmlspecialchars($match['finder_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
+            <a href="<?php echo htmlspecialchars(whatsapp_link($match['finder_phone'])); ?>" target="_blank" rel="noopener" class="btn btn-outline">&#128172; WhatsApp</a>
             <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['finder_phone']); ?>')">&#128203; Copy</button>
           </div>
         </div>
@@ -96,6 +111,7 @@ require 'sidebar.php';
           <div class="contact-phone"><?php echo htmlspecialchars($match['finder_phone']); ?></div>
           <div class="contact-actions" style="justify-content:center;">
             <a href="tel:<?php echo htmlspecialchars($match['finder_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
+            <a href="<?php echo htmlspecialchars(whatsapp_link($match['finder_phone'])); ?>" target="_blank" rel="noopener" class="btn btn-outline">&#128172; WhatsApp</a>
             <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['finder_phone']); ?>')">&#128203; Copy</button>
           </div>
         </div>
@@ -107,6 +123,7 @@ require 'sidebar.php';
           <div class="contact-phone"><?php echo htmlspecialchars($match['owner_phone']); ?></div>
           <div class="contact-actions" style="justify-content:center;">
             <a href="tel:<?php echo htmlspecialchars($match['owner_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
+            <a href="<?php echo htmlspecialchars(whatsapp_link($match['owner_phone'])); ?>" target="_blank" rel="noopener" class="btn btn-outline">&#128172; WhatsApp</a>
             <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['owner_phone']); ?>')">&#128203; Copy</button>
           </div>
         </div>
