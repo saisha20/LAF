@@ -78,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <header class="site-header">
   <div class="brand">
     <div class="brand-icon">
-    <img src="images/foundly-logo.png" alt="Foundly Logo">
+    <img src="https://www.flaticon.com/free-icon/route-finder_18644678?term=finder&page=2&position=31&origin=search&related_id=18644678" alt="Foundly Logo">
 </div>
     <div class="brand-text">
       <span class="brand-name">Foundly</span>
@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <h2>Why Use Our System?</h2>
   <div class="why-cards">
     <div class="why-card">
-      <div class="why-icon">&#128172;</div>
+      <div class="why-icon"><img src="./images/easy reporting.png"></div>
       <h3>Easy Reporting</h3>
       <p>Report lost or found items in just a few steps</p>
     </div>
