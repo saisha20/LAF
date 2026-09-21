@@ -25,7 +25,7 @@ $reset = null;
 if (preg_match('/^[a-f0-9]{64}$/', $secret)) {
     try {
         $stmt = $pdo->prepare(
-            'SELECT reset_id, account_type, account_id
+            'SELECT reset_id, user_id, admin_id
              FROM password_resets
              WHERE token_hash = ? AND expires_at > NOW()
              LIMIT 1'
@@ -54,18 +54,19 @@ if ($reset && $_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             try {
                 // Table and column names come from this fixed choice, never from the user.
-                $isAdmin = ($reset['account_type'] === 'admin');
-                $table   = $isAdmin ? 'admin' : 'users';
-                $idCol   = $isAdmin ? 'admin_id' : 'user_id';
+                $isAdmin   = ($reset['admin_id'] !== null);
+                $table     = $isAdmin ? 'admin' : 'users';
+                $idCol     = $isAdmin ? 'admin_id' : 'user_id';
+                $accountId = $isAdmin ? $reset['admin_id'] : $reset['user_id'];
 
                 $pdo->beginTransaction();
 
                 $stmt = $pdo->prepare("UPDATE $table SET password_hash = ? WHERE $idCol = ?");
-                $stmt->execute([password_hash($newPass, PASSWORD_DEFAULT), $reset['account_id']]);
+                $stmt->execute([password_hash($newPass, PASSWORD_DEFAULT), $accountId]);
 
                 // The link can only be used once.
-                $stmt = $pdo->prepare('DELETE FROM password_resets WHERE account_type = ? AND account_id = ?');
-                $stmt->execute([$reset['account_type'], $reset['account_id']]);
+                $stmt = $pdo->prepare('DELETE FROM password_resets WHERE user_id <=> ? AND admin_id <=> ?');
+                $stmt->execute([$reset['user_id'], $reset['admin_id']]);
 
                 $pdo->commit();
 

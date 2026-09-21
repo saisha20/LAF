@@ -68,15 +68,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $secret = bin2hex(random_bytes(32));
                     $hash   = hash('sha256', $secret);
 
+                    // A reset row belongs to a student (user_id) or an admin (admin_id).
+                    // The column that does not apply stays NULL.
+                    $userId  = ($account['type'] === 'user')  ? $account['id'] : null;
+                    $adminId = ($account['type'] === 'admin') ? $account['id'] : null;
+
                     // Only the newest link works for an account.
-                    $stmt = $pdo->prepare('DELETE FROM password_resets WHERE account_type = ? AND account_id = ?');
-                    $stmt->execute([$account['type'], $account['id']]);
+                    $stmt = $pdo->prepare('DELETE FROM password_resets WHERE user_id <=> ? AND admin_id <=> ?');
+                    $stmt->execute([$userId, $adminId]);
 
                     $stmt = $pdo->prepare(
-                        'INSERT INTO password_resets (account_type, account_id, token_hash, expires_at)
+                        'INSERT INTO password_resets (user_id, admin_id, token_hash, expires_at)
                          VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 1 HOUR))'
                     );
-                    $stmt->execute([$account['type'], $account['id'], $hash]);
+                    $stmt->execute([$userId, $adminId, $hash]);
 
                     $link    = $APP_URL . '/reset_password.php?token=' . $secret;
                     $subject = 'Reset your Foundly password';
