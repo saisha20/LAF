@@ -177,7 +177,10 @@ require 'sidebar.php';
             <td><?php echo date('M j, Y', strtotime($r['date_reported'])); ?></td>
             <td><span class="status-pill <?php echo $statusClass; ?>"><?php echo $statusLabel; ?></span></td>
             <td style="text-align:right;">
-              <a href="report_details.php?id=<?php echo $r['report_id']; ?>" style="font-size:12px;color:var(--indigo);margin-right:12px;">View</a>
+       <a href="report_details.php?id=<?php echo $r['report_id']; ?>" style="font-size:12px;color:var(--indigo);margin-right:12px;">View</a>
+<?php if ($r['match_status'] !== 'verified'): ?>
+  <a href="edit_report.php?id=<?php echo $r['report_id']; ?>" style="font-size:12px;color:var(--indigo);margin-right:12px;">Edit</a>
+<?php endif; ?>
               <form method="POST" action="my_reports.php" style="display:inline;" onsubmit="return confirm('Delete this report?');">
                 <input type="hidden" name="delete_report_id" value="<?php echo $r['report_id']; ?>">
                 <button type="submit" style="background:none;border:none;color:var(--error);cursor:pointer;font-size:12px;">Delete</button>
@@ -197,22 +200,3 @@ require 'sidebar.php';
     </div>
   <?php endif; ?>
 <?php endif; ?>
-
-<div class="info-cards-row">
-  <div class="form-card info-card">
-    <span class="info-icon">&#128274;</span>
-    <div>
-      <h3>Privacy &amp; Verification</h3>
-      <p>Learn how we keep your identity safe while returning items. Verification is required before any contact details are shared.</p>
-      <a href="#">View guidelines &rarr;</a>
-    </div>
-  </div>
-  <div class="form-card info-card">
-    <span class="info-icon">&#128172;</span>
-    <div>
-      <h3>Support Center</h3>
-      <p>Having trouble with a match? Reach out and an admin will help you sort it out.</p>
-      <a href="#">Contact Support &rarr;</a>
-    </div>
-  </div>
-</div>

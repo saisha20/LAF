@@ -47,9 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $type = mime_content_type($_FILES['photo']['tmp_name']);
         if (!in_array($type, $allowed, true)) {
             $error = 'Photo must be a JPG, PNG, or WEBP image.';
-        } elseif ($_FILES['photo']['size'] > 5 * 1024 * 1024) {
-            $error = 'Photo must be under 5MB.';
-        } else {
+        } elseif ($_FILES['photo']['size'] > 10 * 1024 * 1024) {
+    $error = 'Photo must be under 10MB.';
+}
+ else {
             $photoData = file_get_contents($_FILES['photo']['tmp_name']);
             $photoType = $type;
         }

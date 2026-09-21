@@ -51,68 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
-
-    /* =========================
-       NOTIFICATION PREFERENCES
-       ========================= */
-    if ($action === 'notifications') {
-
-        $emailNotifications =
-            isset($_POST['email_notifications']) ? 1 : 0;
-
-        $matchNotifications =
-            isset($_POST['match_notifications']) ? 1 : 0;
-
-        $statusNotifications =
-            isset($_POST['status_notifications']) ? 1 : 0;
-
-        /*
-         * Notification preferences will be stored here.
-         * This requires the notification_preferences table
-         * described below.
-         */
-
-        $stmt = $pdo->prepare(
-            "INSERT INTO notification_preferences
-                (user_id, email_notifications, match_notifications, status_notifications)
-             VALUES (?, ?, ?, ?)
-             ON DUPLICATE KEY UPDATE
-                email_notifications = VALUES(email_notifications),
-                match_notifications = VALUES(match_notifications),
-                status_notifications = VALUES(status_notifications)"
-        );
-
-        $stmt->execute([
-            $_SESSION['user_id'],
-            $emailNotifications,
-            $matchNotifications,
-            $statusNotifications
-        ]);
-
-        $success = 'Notification preferences have been saved.';
-    }
-}
-
-
-/* =========================
-   LOAD NOTIFICATION SETTINGS
-   ========================= */
-
-$stmt = $pdo->prepare(
-    'SELECT email_notifications, match_notifications, status_notifications
-     FROM notification_preferences
-     WHERE user_id = ?'
-);
-
-$stmt->execute([$_SESSION['user_id']]);
-$preferences = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$preferences) {
-    $preferences = [
-        'email_notifications' => 1,
-        'match_notifications' => 1,
-        'status_notifications' => 1
-    ];
 }
 
 $pageTitle  = 'Account Settings';
@@ -124,7 +62,7 @@ require 'sidebar.php';
 
     <div class="settings-header">
         <h1>&#9881; Account Settings</h1>
-        <p>Manage your account, password, and notification preferences.</p>
+        <p>Manage your account and password.</p>
     </div>
 
     <?php if ($error): ?>
@@ -194,55 +132,5 @@ require 'sidebar.php';
 
     </div>
 
-
-    <!-- NOTIFICATION PREFERENCES -->
-
-    <div class="form-card settings-card">
-
-        <h2>&#128276; Notification Preferences</h2>
-
-        <p class="settings-description">
-            Choose which notifications you would like to receive.
-        </p>
-
-        <form method="POST" action="settings.php">
-
-            <input type="hidden" name="action" value="notifications">
-
-            <label class="setting-option">
-                <span>
-                    <strong>Match Notifications</strong>
-                    <small>Get notified when a possible item match is found.</small>
-                </span>
-
-                <input
-                    type="checkbox"
-                    name="match_notifications"
-                    <?php echo $preferences['match_notifications'] ? 'checked' : ''; ?>
-                >
-            </label> <br> <br>
-
-
-            <label class="setting-option">
-                <span>
-                    <strong>Report Status Notifications</strong>
-                    <small>Get updates when the status of your report changes.</small>
-                </span>
-
-                <input
-                    type="checkbox"
-                    name="status_notifications"
-                    <?php echo $preferences['status_notifications'] ? 'checked' : ''; ?>
-                >
-            </label> <br> <br>
-
-
-            <button type="submit" class="btn btn-navy">
-                Save Preferences
-            </button>
-
-        </form>
-
-    </div>
-
 </div>
+ 

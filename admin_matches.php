@@ -75,6 +75,8 @@ $pending = $pdo->query(
      JOIN users ul ON ul.user_id = rl.user_id
      JOIN users uf ON uf.user_id = rf.user_id
      WHERE m.status = 'pending'
+       AND m.claim_statement IS NOT NULL
+       AND m.claim_statement != ''
      ORDER BY m.created_at DESC"
 )->fetchAll(PDO::FETCH_ASSOC);
 

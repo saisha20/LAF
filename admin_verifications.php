@@ -1,64 +1,58 @@
 <?php
 require_once 'auth.php';
 require_once 'db.php';
+require_once 'match_helper.php';   // <-- add this
 
 requireAdmin();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $matchId = isset($_POST['match_id'])
-        ? (int) $_POST['match_id']
-        : 0;
-
-    $action = $_POST['action'] ?? '';
+    $matchId = isset($_POST['match_id']) ? (int) $_POST['match_id'] : 0;
+    $action  = $_POST['action'] ?? '';
 
     if ($matchId > 0 && in_array($action, ['verify', 'reject'], true)) {
 
-        if ($action === 'verify') {
+        // fetch the report ids first so we can notify + update reports afterward
+        $stmt = $pdo->prepare('SELECT lost_report_id, found_report_id FROM matches WHERE match_id = ? AND status = "pending"');
+        $stmt->execute([$matchId]);
+        $m = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $stmt = $pdo->prepare("
-                UPDATE matches
-                SET
-                    status = 'verified',
-                    verified_by = ?,
-                    verified_at = NOW()
-                WHERE match_id = ?
-                AND status = 'pending'
-            ");
+        if ($m) {
+            if ($action === 'verify') {
 
-        } else {
+                $pdo->prepare("
+                    UPDATE matches
+                    SET status = 'verified', verified_by = ?, verified_at = NOW()
+                    WHERE match_id = ? AND status = 'pending'
+                ")->execute([$_SESSION['user_id'], $matchId]);
 
-            $stmt = $pdo->prepare("
-                UPDATE matches
-                SET
-                    status = 'rejected',
-                    verified_by = ?,
-                    verified_at = NOW()
-                WHERE match_id = ?
-                AND status = 'pending'
-            ");
+                $pdo->prepare('UPDATE reports SET status = "matched" WHERE report_id IN (?, ?)')
+                    ->execute([$m['lost_report_id'], $m['found_report_id']]);
+
+                notify_match_verified($pdo, $m['lost_report_id'], $m['found_report_id']);
+
+            } else {
+
+                $pdo->prepare("
+                    UPDATE matches
+                    SET status = 'rejected', verified_by = ?, verified_at = NOW()
+                    WHERE match_id = ? AND status = 'pending'
+                ")->execute([$_SESSION['user_id'], $matchId]);
+
+                notify_match_rejected($pdo, $m['lost_report_id'], $m['found_report_id']);
+            }
         }
-
-        $stmt->execute([
-            $_SESSION['user_id'],
-            $matchId
-        ]);
     }
 
-    /*
-     * Prevent form resubmission when page is refreshed.
-     */
     header('Location: admin_verifications.php');
     exit;
 }
-
 
 /*
 |--------------------------------------------------------------------------
 | Get pending matches
 |--------------------------------------------------------------------------
 */
-
 $stmt = $pdo->query("
     SELECT
         m.match_id,
@@ -99,6 +93,8 @@ $stmt = $pdo->query("
         ON found.user_id = found_user.user_id
 
     WHERE m.status = 'pending'
+      AND m.claim_statement IS NOT NULL
+      AND m.claim_statement != ''
 
     ORDER BY m.created_at DESC
 ");

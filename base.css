@@ -260,4 +260,7 @@ img {
   background: #f2fbf5;
   color: var(--success);
   border: 1px solid #bfe8cc;
+}.badge-matched {
+    background: #1f7a4d;
+    color: #fff;
 }

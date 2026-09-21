@@ -107,16 +107,13 @@ require 'sidebar.php';
 <?php else: ?>
   <div class="item-grid">
     <?php foreach ($items as $item):
-        if ($item['status'] === 'matched') {
-            $badgeClass = 'badge-pending';
-            $badgeLabel = 'Pending';
-        } elseif ($item['type'] === 'lost') {
-            $badgeClass = 'badge-lost';
-            $badgeLabel = 'Lost';
-        } else {
-            $badgeClass = 'badge-found';
-            $badgeLabel = 'Found';
-        }
+        if ($item['type'] === 'lost') {
+    $badgeClass = 'badge-lost';
+    $badgeLabel = 'Lost';
+} else {
+    $badgeClass = 'badge-found';
+    $badgeLabel = 'Found';
+}
     ?>
       <div class="item-card">
         <div class="item-thumb">

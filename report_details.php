@@ -84,13 +84,14 @@ $photoData       = $item['photo_data'] ?? null;
 $reporterName    = $item['reporter_name'] ?? 'Someone';
 $ownerUserId     = $item['user_id'] ?? null;
 
-$badgeLabel = $status === 'matched' ? 'Pending Verification' : ucfirst($type);
+$badgeLabel = ucfirst($type);
+$isMatched = $status === 'matched';
 $isOwnReport = $ownerUserId !== null && (int)$ownerUserId === (int)$uid;
 
 // If this is a found report and it's not the viewer's own, offer their
 // open lost reports as candidates to claim against.
 $myLostReports = [];
-if ($type === 'found' && !$isOwnReport) {
+if ($type === 'found' && !$isOwnReport && !$isMatched) {
     $stmt = $pdo->prepare("SELECT report_id, item_name FROM reports WHERE user_id = ? AND type = 'lost' AND status = 'open' ORDER BY created_at DESC");
     $stmt->execute([$uid]);
     $myLostReports = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -98,6 +99,13 @@ if ($type === 'found' && !$isOwnReport) {
 ?>
 
 <a href="search_items.php" style="font-size:13px;color:var(--text-muted);display:inline-block;margin-bottom:14px;">&larr; Back to Search</a>
+
+<?php if ($isMatched): ?>
+  <div class="notice-card" style="background:#eef0f6;color:var(--text-dark);margin-bottom:16px;">
+    <strong>&#9989; Already Matched</strong>
+    This report has already been matched and verified by an admin. It is no longer available to claim.
+  </div>
+<?php endif; ?>
 
 <div class="form-grid">
   <div class="form-card">
@@ -157,6 +165,9 @@ if ($type === 'found' && !$isOwnReport) {
       <div class="form-card" style="margin-top:16px;">
         <p style="font-size:13px;color:var(--text-muted);">This is your own report. Manage it from <a href="my_reports.php">My Reports</a>.</p>
       </div>
+
+    <?php elseif ($isMatched): ?>
+      <!-- Already matched - claim form hidden, banner above already explains it -->
 
     <?php elseif ($type === 'found'): ?>
       <div class="form-card" style="margin-top:16px;">

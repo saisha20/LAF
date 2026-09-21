@@ -145,8 +145,8 @@ require 'sidebar.php';
         <p style="font-size:12.5px;color:var(--text-muted);">No active listings yet.</p>
       <?php else: ?>
         <?php foreach ($activeListings as $listing):
-            $badgeClass = $listing['status'] === 'matched' ? 'badge-pending' : ($listing['type'] === 'lost' ? 'badge-lost' : 'badge-found');
-            $badgeLabel = $listing['status'] === 'matched' ? 'Pending' : ucfirst($listing['type']);
+            $badgeClass = $listing['status'] === 'matched' ? 'badge-matched' : ($listing['type'] === 'lost' ? 'badge-lost' : 'badge-found');
+$badgeLabel = $listing['status'] === 'matched' ? 'Matched' : ucfirst($listing['type']);
         ?>
           <a href="report_details.php?id=<?php echo $listing['report_id']; ?>" class="listing-row">
             <span class="listing-icon"><?php require_once 'category_icon.php'; echo category_icon(''); ?></span>
