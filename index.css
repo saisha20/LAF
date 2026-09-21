@@ -132,3 +132,16 @@
   color: var(--text-muted);
   margin-top: 4px;
 }
+
+.why-icon img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+}
+.hero-art img {
+  width: 320px;
+  max-width: 100%;
+  height: auto;
+  display: block;
+}

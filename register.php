@@ -61,9 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <title>Create Account - Foundly</title>
-<link rel="stylesheet" href="base.css">
-<link rel="stylesheet" href="auth.css?v=2">
+<link rel="stylesheet" href="base.css?v=2">
+<link rel="stylesheet" href="auth.css?v=3">
 <link rel="stylesheet" href="register.css">
+<link rel="icon" type="image/png" href="image/foundly.png">
 </head>
 <body>
 
@@ -71,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <aside class="auth-side">
     <div class="brand">
-      <div class="brand-icon">&#9737;</div>
+      <div class="brand-icon"><img src="image/foundly.png" alt="Foundly logo"></div>
       <div class="brand-text">
         <span class="brand-name">Foundly</span>
         <span class="brand-tagline">Reliable Recovery</span>
@@ -80,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <h2>Reuniting people<br>with their<br>Belongings</h2>
 
-    <div class="auth-feature"><span class="icon-box">&#128221;</span> Report lost or found items instantly</div>
+    <div class="auth-feature"><span class="icon-box"><img class="icon-img" src="image/easy%20reporting.png" alt=""></span> Report lost or found items instantly</div>
     <div class="auth-feature"><span class="icon-box">&#128269;</span> Search and filter the item registry</div>
     <div class="auth-feature"><span class="icon-box">&#9989;</span> Claim verified item with ease</div>
     <div class="auth-feature"><span class="icon-box">&#128276;</span> Get notified on status update</div>

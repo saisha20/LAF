@@ -136,3 +136,10 @@
 @media (max-width: 800px) {
   .auth-side { display: none; }
 }
+
+.auth-feature .icon-box .icon-img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}

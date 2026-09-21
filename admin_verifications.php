@@ -112,7 +112,7 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <title>Pending Verifications - Foundly</title>
 
-<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="base.css?v=2">
 
 <style>
 
@@ -274,6 +274,7 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 </style>
 
+<link rel="icon" type="image/png" href="image/foundly.png">
 </head>
 
 
@@ -286,7 +287,7 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="brand">
 
-        <div class="brand-icon">&#9737;</div>
+        <div class="brand-icon"><img src="image/foundly.png" alt="Foundly logo"></div>
 
         <div class="brand-text">
 

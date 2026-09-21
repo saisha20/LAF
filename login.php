@@ -1,6 +1,7 @@
 <?php
 require_once 'auth.php';
 require_once 'db.php';
+require_once 'validate.php';
 
 if (isLoggedIn()) {
     header('Location: ' . (isAdmin() ? 'admin_dashboard.php' : 'user_dashboard.php'));
@@ -8,13 +9,18 @@ if (isLoggedIn()) {
 }
 
 $error = '';
+$email = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email    = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    if ($email === '' || $password === '') {
-        $error = 'Please enter both email and password.';
+    $emailCheck = validate_email($email);
+
+    if (!$emailCheck['valid']) {
+        $error = $emailCheck['message'];
+    } elseif ($password === '') {
+        $error = 'Password is required.';
     } else {
 
        $stmt = $pdo->prepare('SELECT admin_id AS user_id, full_name, email, password_hash, role FROM admin WHERE email = ? LIMIT 1');
@@ -46,9 +52,10 @@ if (!$user) {
 <head>
 <meta charset="UTF-8">
 <title>Login - Foundly</title>
-<link rel="stylesheet" href="base.css">
-<link rel="stylesheet" href="auth.css?v=2">
+<link rel="stylesheet" href="base.css?v=2">
+<link rel="stylesheet" href="auth.css?v=3">
 <link rel="stylesheet" href="login.css">
+<link rel="icon" type="image/png" href="image/foundly.png">
 </head>
 <body>
 
@@ -56,7 +63,7 @@ if (!$user) {
 
   <aside class="auth-side">
     <div class="brand">
-      <div class="brand-icon">&#9737;</div>
+      <div class="brand-icon"><img src="image/foundly.png" alt="Foundly logo"></div>
       <div class="brand-text">
         <span class="brand-name">Foundly</span>
         <span class="brand-tagline">Reliable Recovery</span>
@@ -65,7 +72,7 @@ if (!$user) {
 
     <h2>Reuniting people<br>With their<br>Belongings</h2>
 
-    <div class="auth-feature"><span class="icon-box">&#128221;</span> Report lost or found items instantly</div>
+    <div class="auth-feature"><span class="icon-box"><img class="icon-img" src="image/easy%20reporting.png" alt=""></span> Report lost or found items instantly</div>
     <div class="auth-feature"><span class="icon-box">&#128269;</span> Search and filter the item registry</div>
     <div class="auth-feature"><span class="icon-box">&#9989;</span> Claim verified item with ease</div>
     <div class="auth-feature"><span class="icon-box">&#128276;</span> Get notified on status update</div>
@@ -82,12 +89,15 @@ if (!$user) {
       <?php if (isset($_GET['registered'])): ?>
         <div class="form-alert success">Account created successfully. Please sign in.</div>
       <?php endif; ?>
+      <?php if (isset($_GET['reset'])): ?>
+        <div class="form-alert success">Password updated successfully. Please sign in.</div>
+      <?php endif; ?>
 
       <form id="loginForm" method="POST" action="login.php" novalidate>
 
         <div class="field" id="field-email">
           <label for="email">Email Address</label>
-          <input type="text" id="email" name="email" autocomplete="username">
+          <input type="text" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" placeholder="student@kathford.edu.np" autocomplete="username">
           <div class="field-msg"></div>
         </div>
 
@@ -102,7 +112,7 @@ if (!$user) {
 
         <div class="auth-row-inline">
           <label><input type="checkbox" name="remember"> Remember me</label>
-          <a href="#">Forgot password?</a>
+          <a href="forgot_password.php">Forgot password?</a>
         </div>
 
         <button type="submit" class="btn btn-indigo btn-block">Sign In</button>
@@ -114,6 +124,6 @@ if (!$user) {
 
 </div>
 
-<script src="login.js"></script>
+<script src="login.js?v=3"></script>
 </body>
 </html>

@@ -33,14 +33,15 @@ $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
 <meta charset="UTF-8">
 <title>Found Items - Foundly</title>
-<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="base.css?v=2">
 <link rel="stylesheet" href="browse.css">
+<link rel="icon" type="image/png" href="image/foundly.png">
 </head>
 <body>
 
 <header class="site-header">
   <div class="brand">
-    <div class="brand-icon">&#9737;</div>
+    <div class="brand-icon"><img src="image/foundly.png" alt="Foundly logo"></div>
     <div class="brand-text">
       <span class="brand-name">Foundly</span>
       <span class="brand-tagline">Reliable Recovery</span>

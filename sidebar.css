@@ -45,6 +45,15 @@
   text-align: center;
   font-size: 14px;
 }
+.sidebar-icon img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  filter: brightness(0) invert(1);
+}
+
 
 .sidebar-link:hover {
   background: rgba(255,255,255,0.06);

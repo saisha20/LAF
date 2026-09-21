@@ -13,14 +13,15 @@ require_once 'auth.php';
 requireLogin();
 
 $navItems = [
-    'dashboard'     => ['label' => 'Dashboard',     'href' => 'user_dashboard.php', 'icon' => '&#9638;'],
-    'search'        => ['label' => 'Search Items',  'href' => 'search_items.php',   'icon' => '&#128269;'],
-    'post'          => ['label' => 'Post Item',      'href' => 'report_lost.php',    'icon' => '&#10133;'],
-    'reports'       => ['label' => 'Reports',        'href' => 'my_reports.php',     'icon' => '&#128203;'],
-    'claims'        => ['label' => 'My Claims',      'href' => 'my_claims.php',      'icon' => '&#128196;'],
-    'notifications' => ['label' => 'Notifications',  'href' => 'notifications.php',  'icon' => '&#128276;'],
-    'profile'       => ['label' => 'Profile',        'href' => 'profile.php',        'icon' => '&#128100;'],
-    'settings'      => ['label' => 'Settings',       'href' => 'settings.php',       'icon' => '&#9881;']
+
+    'dashboard'     => ['label' => 'Dashboard',     'href' => 'user_dashboard.php', 'icon' => '<img src="image/dashboard.png" alt="">'],
+    'search'        => ['label' => 'Search Items',  'href' => 'search_items.php',   'icon' => '<img src="image/search.png" alt="">'],
+    'post'          => ['label' => 'Post Item',     'href' => 'report_lost.php',    'icon' => '<img src="image/post.png" alt="">'],
+    'reports'       => ['label' => 'Reports',       'href' => 'my_reports.php',     'icon' => '<img src="image/report.png" alt="">'],
+    'claims'        => ['label' => 'My Claims',     'href' => 'my_claims.php',      'icon' => '<img src="image/claim.png" alt="">'],
+    'notifications' => ['label' => 'Notifications', 'href' => 'notifications.php',  'icon' => '<img src="image/notification.png" alt="">'],
+    'profile'       => ['label' => 'Profile',       'href' => 'profile.php',        'icon' => '<img src="image/profile.png" alt="">'],
+    'settings'      => ['label' => 'Settings',      'href' => 'settings.php',       'icon' => '<img src="image/setting.png" alt="">']
 
 ];
 ?>
@@ -29,10 +30,11 @@ $navItems = [
 <head>
 <meta charset="UTF-8">
 <title><?php echo htmlspecialchars($pageTitle); ?> - Foundly</title>
-<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="base.css?v=2">
 <link rel="stylesheet" href="dashboard.css">
-<link rel="stylesheet" href="sidebar.css?v=3">
+<link rel="stylesheet" href="sidebar.css?v=5">
 
+<link rel="icon" type="image/png" href="image/foundly.png">
 </head>
 <body>
 
@@ -40,7 +42,7 @@ $navItems = [
 
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <div class="brand-icon">&#9737;</div>
+      <div class="brand-icon"><img src="image/foundly.png" alt="Foundly logo"></div>
       <div class="brand-text">
         <span class="brand-name">Foundly</span>
         <span class="brand-tagline">Reliable Recovery</span>

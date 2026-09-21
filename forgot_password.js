@@ -1,14 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-  const emailInput    = document.getElementById('email');
-  const passwordInput = document.getElementById('password');
-  const form          = document.getElementById('loginForm');
+  const form       = document.getElementById('forgotForm');
+  if (!form) return;   // the "check your email" screen has no form
 
-  const order = ['email', 'password'];
-
+  const emailInput = document.getElementById('email');
   const fields = {
-    email:    { input: emailInput,    wrap: document.getElementById('field-email'),    touched: false },
-    password: { input: passwordInput, wrap: document.getElementById('field-password'), touched: false }
+    email: { input: emailInput, wrap: document.getElementById('field-email'), touched: false }
   };
 
   function setState(fieldName, isValid, message, forceShow) {
@@ -96,65 +93,18 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   emailInput.addEventListener('blur', function () { fields.email.touched = true; validateEmail(true); });
 
-  // ---------- Password ----------
-  // On the login page the password only has to be filled in. The strength
-  // rules (8 characters, letter, number, symbol) belong on register and
-  // reset-password; showing them here would just tell attackers the rules.
-  function validatePassword(showError) {
-    const value = passwordInput.value;
-    if (value === '') {
-      if (showError) setState('password', false, 'Password is required.');
-      else setState('password', true, '');
-      return false;
-    }
-    setState('password', true, '');
-    return true;
-  }
-
-  passwordInput.addEventListener('input', function () { validatePassword(fields.password.touched); });
-  passwordInput.addEventListener('blur', function () { fields.password.touched = true; validatePassword(true); });
-
-  // ---------- Enter key moves to the next field ----------
-  const validators = {
-    email: validateEmail,
-    password: validatePassword
-  };
-
-  order.forEach(function (name, idx) {
-    fields[name].input.addEventListener('keydown', function (e) {
-      if (e.key !== 'Enter') return;
-      e.preventDefault();
-      fields[name].touched = true;
-      const isValid = validators[name](true);
-      if (!isValid) return;
-
-      const nextName = order[idx + 1];
-      if (nextName) {
-        fields[nextName].input.focus();
-      } else {
-        form.submit();
-      }
-    });
+  // ---------- Enter key submits when the email is valid ----------
+  emailInput.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    e.preventDefault();
+    fields.email.touched = true;
+    if (validateEmail(true)) form.submit();
   });
 
   // ---------- Final check on submit ----------
   form.addEventListener('submit', function (e) {
-    let allValid = true;
-    order.forEach(function (name) {
-      fields[name].touched = true;
-      if (!validators[name](true)) allValid = false;
-    });
-    if (!allValid) e.preventDefault();
-  });
-
-  // ---------- Show/hide password ----------
-  document.querySelectorAll('.password-toggle').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      const target = document.getElementById(btn.dataset.target);
-      const isHidden = target.type === 'password';
-      target.type = isHidden ? 'text' : 'password';
-      btn.textContent = isHidden ? 'Hide' : 'Show';
-    });
+    fields.email.touched = true;
+    if (!validateEmail(true)) e.preventDefault();
   });
 
 });

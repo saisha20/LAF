@@ -47,7 +47,7 @@ $activePage = 'notifications';
 require 'sidebar.php';
 ?>
 
-<link rel="stylesheet" href="contact_info.css">
+<link rel="stylesheet" href="contact_info.css?v=2">
 
 <?php if (!$match): ?>
 
@@ -88,9 +88,9 @@ require 'sidebar.php';
           <div class="contact-sub">Owner's Phone</div>
           <div class="contact-phone"><?php echo htmlspecialchars($match['owner_phone']); ?></div>
           <div class="contact-actions">
-            <a href="tel:<?php echo htmlspecialchars($match['owner_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
-            <a href="<?php echo htmlspecialchars(whatsapp_link($match['owner_phone'])); ?>" target="_blank" rel="noopener" class="btn btn-outline">&#128172; WhatsApp</a>
-            <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['owner_phone']); ?>')">&#128203; Copy</button>
+            <a href="tel:<?php echo htmlspecialchars($match['owner_phone']); ?>" class="btn btn-outline"><img src="image/call.png" alt="" class="btn-icon"> Call</a>
+            <a href="<?php echo htmlspecialchars(whatsapp_link($match['owner_phone'])); ?>" target="_blank" rel="noopener" class="btn btn-outline"><img src="image/whatsapp.png" alt="" class="btn-icon"> WhatsApp</a>
+            <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['owner_phone']); ?>')"><img src="image/copy.png" alt="" class="btn-icon"> Copy</button>
           </div>
         </div>
         <div class="contact-card">
@@ -98,9 +98,9 @@ require 'sidebar.php';
           <div class="contact-sub">Finder's Phone</div>
           <div class="contact-phone"><?php echo htmlspecialchars($match['finder_phone']); ?></div>
           <div class="contact-actions">
-            <a href="tel:<?php echo htmlspecialchars($match['finder_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
-            <a href="<?php echo htmlspecialchars(whatsapp_link($match['finder_phone'])); ?>" target="_blank" rel="noopener" class="btn btn-outline">&#128172; WhatsApp</a>
-            <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['finder_phone']); ?>')">&#128203; Copy</button>
+            <a href="tel:<?php echo htmlspecialchars($match['finder_phone']); ?>" class="btn btn-outline"><img src="image/call.png" alt="" class="btn-icon"> Call</a>
+            <a href="<?php echo htmlspecialchars(whatsapp_link($match['finder_phone'])); ?>" target="_blank" rel="noopener" class="btn btn-outline"><img src="image/whatsapp.png" alt="" class="btn-icon"> WhatsApp</a>
+            <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['finder_phone']); ?>')"><img src="image/copy.png" alt="" class="btn-icon"> Copy</button>
           </div>
         </div>
       <?php elseif ($viewerIsLost): ?>
@@ -110,9 +110,9 @@ require 'sidebar.php';
           <div class="contact-sub">Finder's Phone</div>
           <div class="contact-phone"><?php echo htmlspecialchars($match['finder_phone']); ?></div>
           <div class="contact-actions" style="justify-content:center;">
-            <a href="tel:<?php echo htmlspecialchars($match['finder_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
-            <a href="<?php echo htmlspecialchars(whatsapp_link($match['finder_phone'])); ?>" target="_blank" rel="noopener" class="btn btn-outline">&#128172; WhatsApp</a>
-            <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['finder_phone']); ?>')">&#128203; Copy</button>
+            <a href="tel:<?php echo htmlspecialchars($match['finder_phone']); ?>" class="btn btn-outline"><img src="image/call.png" alt="" class="btn-icon"> Call</a>
+            <a href="<?php echo htmlspecialchars(whatsapp_link($match['finder_phone'])); ?>" target="_blank" rel="noopener" class="btn btn-outline"><img src="image/whatsapp.png" alt="" class="btn-icon"> WhatsApp</a>
+            <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['finder_phone']); ?>')"><img src="image/copy.png" alt="" class="btn-icon"> Copy</button>
           </div>
         </div>
       <?php else: ?>
@@ -122,9 +122,9 @@ require 'sidebar.php';
           <div class="contact-sub">Owner's Phone</div>
           <div class="contact-phone"><?php echo htmlspecialchars($match['owner_phone']); ?></div>
           <div class="contact-actions" style="justify-content:center;">
-            <a href="tel:<?php echo htmlspecialchars($match['owner_phone']); ?>" class="btn btn-outline">&#128222; Call</a>
-            <a href="<?php echo htmlspecialchars(whatsapp_link($match['owner_phone'])); ?>" target="_blank" rel="noopener" class="btn btn-outline">&#128172; WhatsApp</a>
-            <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['owner_phone']); ?>')">&#128203; Copy</button>
+            <a href="tel:<?php echo htmlspecialchars($match['owner_phone']); ?>" class="btn btn-outline"><img src="image/call.png" alt="" class="btn-icon"> Call</a>
+            <a href="<?php echo htmlspecialchars(whatsapp_link($match['owner_phone'])); ?>" target="_blank" rel="noopener" class="btn btn-outline"><img src="image/whatsapp.png" alt="" class="btn-icon"> WhatsApp</a>
+            <button type="button" class="btn btn-outline" onclick="copyPhone(this, '<?php echo htmlspecialchars($match['owner_phone']); ?>')"><img src="image/copy.png" alt="" class="btn-icon"> Copy</button>
           </div>
         </div>
       <?php endif; ?>
@@ -144,9 +144,9 @@ require 'sidebar.php';
   <script>
   function copyPhone(btn, phone) {
     navigator.clipboard.writeText(phone).then(function () {
-      const original = btn.textContent;
+      const original = btn.innerHTML;
       btn.textContent = 'Copied!';
-      setTimeout(function () { btn.textContent = original; }, 1500);
+      setTimeout(function () { btn.innerHTML = original; }, 1500);
     });
   }
   </script>

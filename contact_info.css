@@ -124,3 +124,10 @@
   .contact-cards-row { grid-template-columns: 1fr; }
   .info-tiles-row { grid-template-columns: 1fr; }
 }
+
+.btn-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  display: block;
+}

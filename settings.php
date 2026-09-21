@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $pageTitle  = 'Account Settings';
-$activePage = '';
+$activePage = 'settings';
 require 'sidebar.php';
 ?>
 

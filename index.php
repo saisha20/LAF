@@ -70,16 +70,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <title>Foundly - Reliable Recovery</title>
-<link rel="stylesheet" href="base.css">
-<link rel="stylesheet" href="index.css">
+<link rel="stylesheet" href="base.css?v=2">
+<link rel="stylesheet" href="index.css?v=2">
+<link rel="icon" type="image/png" href="image/foundly.png">
 </head>
 <body>
 
 <header class="site-header">
   <div class="brand">
-    <div class="brand-icon">
-    <img src="https://www.flaticon.com/free-icon/route-finder_18644678?term=finder&page=2&position=31&origin=search&related_id=18644678" alt="Foundly Logo">
-</div>
+    <div class="brand-icon"><img src="image/foundly.png" alt="Foundly logo"></div>
     <div class="brand-text">
       <span class="brand-name">Foundly</span>
       <span class="brand-tagline">Reliable Recovery</span>
@@ -113,12 +112,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <a href="report_found.php" class="btn btn-navy">Report Found &rarr;</a>
     </div>
   </div>
-  <div class="hero-art">
-    <div class="magnifier-circle">
-      <span>&#128181;</span>
-      <span>&#128241;</span>
-      <span>&#128085;</span>
-    </div>
+   <div class="hero-art">
+    <img src="image/hero.png" alt="Foundly lost and found">
   </div>
 </section>
 
@@ -126,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <h2>Why Use Our System?</h2>
   <div class="why-cards">
     <div class="why-card">
-      <div class="why-icon"><img src="./images/easy reporting.png"></div>
+      <div class="why-icon"><img src="image/easy%20reporting.png" alt="Easy reporting"></div>
       <h3>Easy Reporting</h3>
       <p>Report lost or found items in just a few steps</p>
     </div>

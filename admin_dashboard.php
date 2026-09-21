@@ -22,7 +22,7 @@ $pendingCount = $pdo->query(
 <meta charset="UTF-8">
 <title>Admin Dashboard - Foundly</title>
 
-<link rel="stylesheet" href="base.css">
+<link rel="stylesheet" href="base.css?v=2">
 <link rel="stylesheet" href="dashboard.css">
 
 <style>
@@ -50,6 +50,7 @@ $pendingCount = $pdo->query(
 }
 </style>
 
+<link rel="icon" type="image/png" href="image/foundly.png">
 </head>
 
 <body>
@@ -57,7 +58,7 @@ $pendingCount = $pdo->query(
 <header class="site-header">
 
   <div class="brand">
-    <div class="brand-icon">&#9737;</div>
+    <div class="brand-icon"><img src="image/foundly.png" alt="Foundly logo"></div>
 
     <div class="brand-text">
       <span class="brand-name">Foundly</span>
