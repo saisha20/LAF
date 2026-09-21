@@ -78,11 +78,11 @@ $navItems = [
 
   <div class="main-area">
 
-    <header class="topbar">
-      <div class="topbar-search">
+        <header class="topbar">
+            <form class="topbar-search" action="search_items.php" method="GET">
         <span>&#128269;</span>
-        <input type="text" placeholder="Search for items, locations...">
-      </div>
+        <input type="text" name="q" placeholder="Search for items, locations..." value="<?php echo htmlspecialchars($_GET['q'] ?? ''); ?>">
+      </form>
 <div class="topbar-actions">
     <a href="settings.php" class="topbar-icon" title="Account Settings">&#9881;</a>
 
