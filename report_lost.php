@@ -7,7 +7,7 @@ requireLogin();
 $categories = $pdo->query('SELECT category_id, category_name FROM categories ORDER BY category_name')->fetchAll(PDO::FETCH_ASSOC);
 
 $error = '';
-$old = ['item_name' => '', 'category_id' => '', 'description' => '', 'color' => '', 'brand' => '', 'reward_amount' => '', 'date_lost' => '', 'condition_status' => 'new', 'location' => ''];
+$old = ['item_name' => '', 'category_id' => '', 'description' => '', 'color' => '', 'brand' => '', 'reward_amount' => '', 'date_lost' => '', 'time_lost' => '', 'condition_status' => 'new', 'location' => ''];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $old['item_name']     = trim($_POST['item_name'] ?? '');
@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $old['brand']         = trim($_POST['brand'] ?? '');
     $old['reward_amount'] = trim($_POST['reward_amount'] ?? '');
     $old['date_lost']        = trim($_POST['date_lost'] ?? '');
+    $old['time_lost']        = trim($_POST['time_lost'] ?? '');
     $old['condition_status'] = $_POST['condition_status'] ?? 'new';
     $old['location']         = trim($_POST['location'] ?? '');
     $isPublic             = isset($_POST['is_public']) ? 1 : 0;
@@ -31,6 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please enter a valid date lost.';
     } elseif ($old['date_lost'] > date('Y-m-d')) {
         $error = 'Date lost cannot be in the future.';
+    } elseif ($old['time_lost'] !== '' && !preg_match('/^\d{2}:\d{2}$/', $old['time_lost'])) {
+        $error = 'Please enter a valid time.';
     } elseif (!in_array($old['condition_status'], ['new', 'good', 'fair', 'poor'], true)) {
         $error = 'Please choose a valid condition.';
     } elseif ($old['location'] === '') {
@@ -60,9 +63,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare(
             'INSERT INTO reports
                 (user_id, type, item_name, category_id, description, color, brand, reward_amount, condition_status,
-                 location, date_reported, status, is_public, photo_data, photo_type)
+                 location, date_reported, time_reported, status, is_public, photo_data, photo_type)
              VALUES
-                (?, "lost", ?, ?, ?, ?, ?, ?, ?, ?, ?, "open", ?, ?, ?)'
+                (?, "lost", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "open", ?, ?, ?)'
         );
         $stmt->execute([
             $_SESSION['user_id'],
@@ -75,6 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $old['condition_status'],
             $old['location'],
             $old['date_lost'],
+            $old['time_lost'] !== '' ? $old['time_lost'] : null,
             $isPublic,
             $photoData,
             $photoType,
@@ -135,10 +139,14 @@ require 'sidebar.php';
         <textarea id="description" name="description" rows="4" placeholder="Describe unique markings, scratches, or contents inside..."><?php echo htmlspecialchars($old['description']); ?></textarea>
       </div>
 
-      <div class="field-row">
+      <div class="field-row three">
         <div class="field">
           <label for="date_lost">Date Lost</label>
           <input type="date" id="date_lost" name="date_lost" value="<?php echo htmlspecialchars($old['date_lost']); ?>" max="<?php echo date('Y-m-d'); ?>">
+        </div>
+        <div class="field">
+          <label for="time_lost">Time Lost (Optional)</label>
+          <input type="time" id="time_lost" name="time_lost" value="<?php echo htmlspecialchars($old['time_lost']); ?>">
         </div>
         <div class="field">
           <label for="condition_status">Condition</label>
@@ -169,6 +177,15 @@ require 'sidebar.php';
           <input type="text" id="reward_amount" name="reward_amount" placeholder="Rs 0.00" value="<?php echo htmlspecialchars($old['reward_amount']); ?>">
         </div>
       </div>
+
+      <div class="form-actions" style="margin-top:16px;">
+         <button
+                type="submit"
+                class="btn btn-navy btn-block"
+            >
+                Submit Lost Report
+            </button>
+      </div>
     </div>
 
     <div>
@@ -190,6 +207,22 @@ require 'sidebar.php';
         </div>
       </div>
 
+      <div class="form-card" style="margin-top:16px; background:#eafaf0; border:1px solid #cdeedb;">
+        <h2 style="display:flex;align-items:center;gap:6px;">&#9989; Privacy &amp; Security</h2>
+        <p style="font-size:13px;color:#2f6e4e;margin:0;">
+          Your contact information is only shared with the person you approve as a match. Lost item details are kept secure until a claim is verified.
+        </p>
+      </div>
+
+      <div class="form-card" style="margin-top:16px;">
+        <h2>Quick Tips</h2>
+        <ul style="list-style:none;padding:0;margin:0;font-size:13px;color:var(--text-muted);">
+          <li style="margin-bottom:8px;">&#10003; Be specific about the location</li>
+          <li style="margin-bottom:8px;">&#10003; Mention unique stickers or marks</li>
+          <li>&#10003; Note the approximate time lost</li>
+        </ul>
+      </div>
+
       <div class="form-card" style="margin-top:16px;">
         <h2>&#128737; Visibility</h2>
         <div class="toggle-row">
@@ -205,11 +238,6 @@ require 'sidebar.php';
         <div class="lock-note">
           &#128274; Your personal contact details are hidden until you approve a claim request.
         </div>
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn btn-navy btn-block">&#9654; Submit Report</button>
-        <button type="button" class="btn btn-outline btn-block" disabled title="Coming soon">Save Draft</button>
       </div>
     </div>
 

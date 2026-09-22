@@ -164,7 +164,7 @@ function notify_match_verified($pdo, $lostReportId, $foundReportId) {
  * match - lets them know it wasn't confirmed and their report is
  * still open.
  */
-function notify_match_rejected($pdo, $lostReportId, $foundReportId) {
+function notify_match_rejected($pdo, $lostReportId, $foundReportId, $reason = '') {
     $stmt = $pdo->prepare('SELECT report_id, user_id, item_name FROM reports WHERE report_id IN (?, ?)');
     $stmt->execute([$lostReportId, $foundReportId]);
     $reports = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -174,6 +174,10 @@ function notify_match_rejected($pdo, $lostReportId, $foundReportId) {
             $message = 'Your item match has been rejected by the admin.';
         } else {
             $message = 'The match for your found item has been rejected by the admin.';
+        }
+
+        if ($reason !== '') {
+            $message .= ' Reason: ' . $reason;
         }
 
         $pdo->prepare(

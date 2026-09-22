@@ -1,7 +1,7 @@
 <?php
-require_once 'auth.php';
-require_once 'db.php';
-requireAdmin();
+$pageTitle = 'Lost & Found Reports';
+$activeAdminPage = 'reports';
+require 'admin_header.php';
 
 $stmt = $pdo->query("
     SELECT
@@ -26,38 +26,11 @@ $stmt = $pdo->query("
 $reports = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-<meta charset="UTF-8">
-
-<title>Reports - Foundly</title>
-
-<link rel="stylesheet" href="base.css?v=2">
-
 <style>
-
-.admin-container {
-    width: 92%;
-    max-width: 1400px;
-    margin: 50px auto;
-}
-
-.back-link {
-    display: inline-block;
-    margin-bottom: 25px;
-    color: #111b3a;
-    text-decoration: none;
-    font-weight: 600;
-}
-
 .admin-table {
     width: 100%;
     border-collapse: collapse;
     background: white;
-    margin-top: 25px;
 }
 
 .admin-table th,
@@ -75,157 +48,101 @@ $reports = $stmt->fetchAll(PDO::FETCH_ASSOC);
 .admin-table tr:hover {
     background: #f7f7f7;
 }
-
-.badge {
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
 </style>
 
-<link rel="icon" type="image/png" href="image/foundly.png">
-</head>
+<h1>Lost & Found Reports</h1>
 
-<body>
+<p>
+    View all reports submitted by registered users.
+</p>
 
-<header class="site-header">
+<div class="form-card" style="padding:0;overflow:hidden;">
 
-    <div class="brand">
+<table class="admin-table">
 
-        <div class="brand-icon"><img src="image/foundly.png" alt="Foundly logo"></div>
+    <thead>
 
-        <div class="brand-text">
-            <span class="brand-name">Foundly</span>
-            <span class="brand-tagline">Reliable Recovery</span>
-        </div>
+        <tr>
 
-    </div>
+            <th>ID</th>
+            <th>User</th>
+            <th>Type</th>
+            <th>Item</th>
+            <th>Description</th>
+            <th>Color</th>
+            <th>Brand</th>
+            <th>Condition</th>
+            <th>Location</th>
+            <th>Date</th>
+            <th>Status</th>
 
+        </tr>
 
-    <nav class="site-nav">
-
-        <a href="index.php">Home</a>
-
-        <a href="admin_dashboard.php">
-            Admin Dashboard
-        </a>
-
-    </nav>
-
-
-    <div class="nav-actions">
-
-        <span class="nav-login">
-            Admin:
-            <?php echo htmlspecialchars($_SESSION['full_name']); ?>
-        </span>
-
-        <a href="logout.php" class="btn btn-navy">
-            Logout
-        </a>
-
-    </div>
-
-</header>
+    </thead>
 
 
-<div class="admin-container">
+    <tbody>
 
-    <a href="admin_dashboard.php" class="back-link">
-        ← Back to Dashboard
-    </a>
+    <?php foreach ($reports as $report): ?>
 
-    <h1>Lost & Found Reports</h1>
+        <tr>
 
-    <p>
-        View all reports submitted by registered users.
-    </p>
+            <td>
+                <?php echo htmlspecialchars($report['report_id']); ?>
+            </td>
 
+            <td>
+                <?php echo htmlspecialchars($report['full_name'] ?? 'Unknown'); ?>
+            </td>
 
-    <table class="admin-table">
+            <td>
+                <?php echo htmlspecialchars($report['type']); ?>
+            </td>
 
-        <thead>
+            <td>
+                <?php echo htmlspecialchars($report['item_name']); ?>
+            </td>
 
-            <tr>
+            <td>
+                <?php echo htmlspecialchars($report['description']); ?>
+            </td>
 
-                <th>ID</th>
-                <th>User</th>
-                <th>Type</th>
-                <th>Item</th>
-                <th>Description</th>
-                <th>Color</th>
-                <th>Brand</th>
-                <th>Condition</th>
-                <th>Location</th>
-                <th>Date</th>
-                <th>Status</th>
+            <td>
+                <?php echo htmlspecialchars($report['color']); ?>
+            </td>
 
-            </tr>
+            <td>
+                <?php echo htmlspecialchars($report['brand']); ?>
+            </td>
 
-        </thead>
+            <td>
+                <?php echo htmlspecialchars($report['condition_status']); ?>
+            </td>
 
+            <td>
+                <?php echo htmlspecialchars($report['location']); ?>
+            </td>
 
-        <tbody>
+            <td>
+                <?php echo htmlspecialchars($report['date_reported']); ?>
+            </td>
 
-        <?php foreach ($reports as $report): ?>
+            <td>
+                <?php echo htmlspecialchars($report['status']); ?>
+            </td>
 
-            <tr>
+        </tr>
 
-                <td>
-                    <?php echo htmlspecialchars($report['report_id']); ?>
-                </td>
+    <?php endforeach; ?>
 
-                <td>
-                    <?php echo htmlspecialchars($report['full_name'] ?? 'Unknown'); ?>
-                </td>
+    </tbody>
 
-                <td>
-                    <?php echo htmlspecialchars($report['type']); ?>
-                </td>
-
-                <td>
-                    <?php echo htmlspecialchars($report['item_name']); ?>
-                </td>
-
-                <td>
-                    <?php echo htmlspecialchars($report['description']); ?>
-                </td>
-
-                <td>
-                    <?php echo htmlspecialchars($report['color']); ?>
-                </td>
-
-                <td>
-                    <?php echo htmlspecialchars($report['brand']); ?>
-                </td>
-
-                <td>
-                    <?php echo htmlspecialchars($report['condition_status']); ?>
-                </td>
-
-                <td>
-                    <?php echo htmlspecialchars($report['location']); ?>
-                </td>
-
-                <td>
-                    <?php echo htmlspecialchars($report['date_reported']); ?>
-                </td>
-
-                <td>
-                    <?php echo htmlspecialchars($report['status']); ?>
-                </td>
-
-            </tr>
-
-        <?php endforeach; ?>
-
-        </tbody>
-
-    </table>
+</table>
 
 </div>
 
+    </main>
+  </div>
+</div>
 </body>
 </html>

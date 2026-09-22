@@ -15,6 +15,7 @@ $old = [
     'category_id' => '',
     'description' => '',
     'found_date' => '',
+    'found_time' => '',
     'condition_status' => 'new',
     'location' => '',
     'color' => '',
@@ -28,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $old['category_id']      = $_POST['category_id'] ?? '';
     $old['description']      = trim($_POST['description'] ?? '');
     $old['found_date']       = trim($_POST['found_date'] ?? '');
+    $old['found_time']       = trim($_POST['found_time'] ?? '');
     $old['condition_status'] = $_POST['condition_status'] ?? 'new';
     $old['location']         = trim($_POST['location'] ?? '');
     $old['color']            = trim($_POST['color'] ?? '');
@@ -51,6 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please enter a valid found date.';
     } elseif ($old['found_date'] > date('Y-m-d')) {
         $error = 'Found date cannot be in the future.';
+    } elseif (
+        $old['found_time'] !== '' &&
+        !preg_match('/^\d{2}:\d{2}$/', $old['found_time'])
+    ) {
+        $error = 'Please enter a valid time.';
     } elseif (!in_array($old['condition_status'], $validConditions, true)) {
         $error = 'Please choose a valid condition.';
     } elseif ($old['location'] === '') {
@@ -104,6 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     brand,
                     notes,
                     date_reported,
+                    time_reported,
                     status,
                     is_public,
                     photo_data,
@@ -113,6 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 (
                     ?,
                     "found",
+                    ?,
                     ?,
                     ?,
                     ?,
@@ -140,6 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $old['brand'] !== '' ? $old['brand'] : null,
             $old['notes'] !== '' ? $old['notes'] : null,
             $old['found_date'],
+            $old['found_time'] !== '' ? $old['found_time'] : null,
             $photoData,
             $photoType
         ]);
@@ -243,9 +253,9 @@ require 'sidebar.php';
             </div>
 
 
-            <!-- DATE + CONDITION -->
+            <!-- DATE + TIME + CONDITION -->
 
-            <div class="field-row">
+            <div class="field-row three">
 
                 <div class="field">
 
@@ -257,6 +267,20 @@ require 'sidebar.php';
                         name="found_date"
                         value="<?php echo htmlspecialchars($old['found_date']); ?>"
                         max="<?php echo date('Y-m-d'); ?>"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="found_time">Time Found (Optional)</label>
+
+                    <input
+                        type="time"
+                        id="found_time"
+                        name="found_time"
+                        value="<?php echo htmlspecialchars($old['found_time']); ?>"
                     >
 
                 </div>

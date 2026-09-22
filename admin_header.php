@@ -4,10 +4,10 @@ require_once 'db.php';
 requireAdmin();
 
 $adminNav = [
-    'dashboard' => ['href' => 'admin_dashboard.php', 'label' => 'Dashboard'],
-    'users'     => ['href' => 'admin_users.php',     'label' => 'Users'],
-    'reports'   => ['href' => 'admin_reports.php',   'label' => 'Reports'],
-    'matches'   => ['href' => 'admin_matches.php',   'label' => 'Verify Matches'],
+    'dashboard' => ['href' => 'admin_dashboard.php', 'label' => 'Dashboard', 'icon' => '<img src="image/dashboard.png" alt="">'],
+    'users'     => ['href' => 'admin_users.php',     'label' => 'Users',     'icon' => '<img src="image/profile.png" alt="">'],
+    'reports'   => ['href' => 'admin_reports.php',   'label' => 'Reports',   'icon' => '<img src="image/report.png" alt="">'],
+    'matches'   => ['href' => 'admin_verifications.php', 'label' => 'Verify Matches', 'icon' => '<img src="image/claim.png" alt="">'],
 ];
 ?>
 <!DOCTYPE html>
@@ -20,30 +20,39 @@ $adminNav = [
 <link rel="stylesheet" href="sidebar.css">
 <link rel="stylesheet" href="admin.css">
 <link rel="stylesheet" href="admin_claim.css">
-<link rel="stylesheet" href="admin_claim.css">
 <link rel="icon" type="image/png" href="image/foundly.png">
 </head>
 <body>
 
-<header class="site-header">
-  <div class="brand">
-    <div class="brand-icon"><img src="image/foundly.png" alt="Foundly logo"></div>
-    <div class="brand-text">
-      <span class="brand-name">Foundly</span>
-      <span class="brand-tagline">Admin Panel</span>
-    </div>
-  </div>
-  <nav class="site-nav">
-    <?php foreach ($adminNav as $key => $item): ?>
-      <a href="<?php echo $item['href']; ?>" class="<?php echo ($activeAdminPage ?? '') === $key ? 'active-nav' : ''; ?>">
-        <?php echo htmlspecialchars($item['label']); ?>
-      </a>
-    <?php endforeach; ?>
-  </nav>
-  <div class="nav-actions">
-    <span class="nav-login">Admin: <?php echo htmlspecialchars($_SESSION['full_name']); ?></span>
-    <a href="logout.php" class="btn btn-navy">Logout</a>
-  </div>
-</header>
+<div class="shell">
 
-<div class="admin-main">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon"><img src="image/foundly.png" alt="Foundly logo"></div>
+      <div class="brand-text">
+        <span class="brand-name">Foundly</span>
+        <span class="brand-tagline">Admin Panel</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <?php foreach ($adminNav as $key => $item): ?>
+        <a href="<?php echo $item['href']; ?>" class="sidebar-link <?php echo ($activeAdminPage ?? '') === $key ? 'active' : ''; ?>">
+          <span class="sidebar-icon"><?php echo $item['icon']; ?></span>
+          <?php echo htmlspecialchars($item['label']); ?>
+        </a>
+      <?php endforeach; ?>
+    </nav>
+  </aside>
+
+  <div class="main-area">
+
+    <header class="topbar">
+      <div></div>
+      <div class="topbar-actions">
+        <span class="nav-login">Admin: <?php echo htmlspecialchars($_SESSION['full_name']); ?></span>
+        <a href="logout.php" class="logout-btn">Logout</a>
+      </div>
+    </header>
+
+    <main class="dash-main">

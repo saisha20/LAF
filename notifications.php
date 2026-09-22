@@ -66,6 +66,14 @@ $activePage = 'notifications';
 require 'sidebar.php';
 ?>
 
+<?php if (isset($_GET['dismissed'])): ?>
+  <?php if ($_GET['dismissed'] === '1'): ?>
+    <div class="form-alert success" style="margin-bottom:16px;">Got it - that match has been removed. Your report is still open.</div>
+  <?php else: ?>
+    <div class="form-alert error" style="margin-bottom:16px;">This match has already been resolved (verified or rejected by an admin), so there was nothing left to dismiss. Your report is unaffected.</div>
+  <?php endif; ?>
+<?php endif; ?>
+
 <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;">
   <div>
     <h1>Notifications Hub</h1>
@@ -112,7 +120,7 @@ require 'sidebar.php';
               <a href="?read=<?php echo $n['notification_id']; ?>&redirect=<?php echo urlencode($redirect); ?>&tab=<?php echo $tab; ?>" class="btn btn-outline" style="padding:8px 14px;font-size:12px;">View Item Details</a>
             <?php elseif ($n['type'] === 'potential_match'): ?>
               <a href="?read=<?php echo $n['notification_id']; ?>&redirect=<?php echo urlencode($redirect); ?>&tab=<?php echo $tab; ?>" class="btn btn-navy" style="padding:8px 14px;font-size:12px;">View Match</a>
-              <a href="?read=<?php echo $n['notification_id']; ?>&redirect=notifications.php&tab=<?php echo $tab; ?>" class="btn btn-outline" style="padding:8px 14px;font-size:12px;">Not My Item</a>
+              <a href="not_my_item.php?report_id=<?php echo (int)$n['link_report_id']; ?>&notification_id=<?php echo $n['notification_id']; ?>&tab=<?php echo urlencode($tab); ?>" class="btn btn-outline" style="padding:8px 14px;font-size:12px;" onclick="return confirm('Mark this as not your item? The match will be removed and both reports stay open.');">Not My Item</a>
             <?php elseif ($n['type'] === 'claim_review'): ?>
               <a href="?read=<?php echo $n['notification_id']; ?>&redirect=<?php echo urlencode($redirect); ?>&tab=<?php echo $tab; ?>" style="font-size:12px;color:var(--indigo);">Track Status</a>
             <?php else: ?>

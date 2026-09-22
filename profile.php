@@ -83,7 +83,7 @@ require 'sidebar.php';
     <span class="badge badge-member"><?php echo htmlspecialchars(ucfirst($me['user_type'])); ?> Member</span>
   </div>
   <div class="profile-banner-actions">
-    <button type="button" class="btn btn-outline" disabled title="Coming soon">View Public Profile</button>
+    <a href="public_profile.php?id=<?php echo (int)$_SESSION['user_id']; ?>" class="btn btn-outline">View Public Profile</a>
     <button type="submit" form="profileForm" class="btn btn-navy">Save Changes</button>
   </div>
 </div>

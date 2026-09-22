@@ -108,8 +108,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reject'])) {
 $stmt = $pdo->prepare(
     'SELECT m.*,
             rl.item_name AS lost_item, rl.description AS lost_desc, rl.category_id AS lost_cat,
+            rl.location AS lost_location, rl.date_reported AS lost_date,
+            rl.color AS lost_color, rl.brand AS lost_brand,
+            (rl.photo_data IS NOT NULL) AS lost_has_photo,
             rf.item_name AS found_item, rf.description AS found_desc, rf.category_id AS found_cat,
             rf.location AS found_location, rf.date_reported AS found_date,
+            rf.color AS found_color, rf.brand AS found_brand,
             (rf.photo_data IS NOT NULL) AS found_has_photo,
             ul.user_id AS owner_id, ul.full_name AS owner_name, ul.user_type AS owner_type, ul.phone AS owner_phone,
             uf.user_id AS finder_id, uf.full_name AS finder_name, uf.user_type AS finder_type, uf.phone AS finder_phone
@@ -129,7 +133,7 @@ require 'admin_header.php';
 
 if (!$match) {
     echo '<h1>Claim not found</h1><p class="page-sub">This match may have been removed.</p><a href="admin_matches.php" class="btn btn-navy">Back to Verify Matches</a>';
-    require 'admin_footer.php';
+    echo '</main></div></div></body></html>';
     exit;
 }
 
@@ -159,20 +163,48 @@ $confidence = calc_match_confidence($match['lost_desc'], $match['found_desc'], $
 
     <div class="form-card">
       <h2>Item Overview</h2>
-      <div style="display:flex;gap:16px;">
-        <?php if ($match['found_has_photo']): ?>
-          <img src="serve_photo.php?id=<?php echo $match['found_report_id']; ?>" style="width:110px;height:110px;object-fit:cover;border-radius:10px;flex-shrink:0;">
-        <?php else: ?>
-          <div style="width:110px;height:110px;background:#eef0f6;border-radius:10px;flex-shrink:0;"></div>
-        <?php endif; ?>
+      <p style="font-size:12px;color:var(--text-muted);margin:-4px 0 14px;">Compare what the owner reported as lost against what the finder reported as found.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+        <!-- LOST SIDE - reported by the owner -->
         <div>
+          <span class="badge badge-lost" style="margin-bottom:8px;display:inline-block;">Lost &mdash; Owner: <?php echo htmlspecialchars($match['owner_name']); ?></span>
+          <?php if ($match['lost_has_photo']): ?>
+            <img src="serve_photo.php?id=<?php echo $match['lost_report_id']; ?>" style="width:100%;height:160px;object-fit:cover;border-radius:10px;margin-bottom:10px;">
+          <?php else: ?>
+            <div style="width:100%;height:160px;background:#eef0f6;border-radius:10px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:12px;">No photo uploaded</div>
+          <?php endif; ?>
+          <div class="claim-label">Item Name</div>
+          <h3 style="font-size:15px;margin-bottom:8px;"><?php echo htmlspecialchars($match['lost_item']); ?></h3>
+          <div class="claim-label">Description</div>
+          <p style="font-size:13px;color:var(--text-dark);margin-bottom:10px;"><?php echo htmlspecialchars($match['lost_desc']); ?></p>
+          <span class="tag">Location: <?php echo htmlspecialchars($match['lost_location']); ?></span>
+          <span class="tag">Date Lost: <?php echo date('M j, Y', strtotime($match['lost_date'])); ?></span>
+          <?php if ($match['lost_color'] || $match['lost_brand']): ?>
+            <span class="tag"><?php echo htmlspecialchars(trim(($match['lost_brand'] ?? '') . ' ' . ($match['lost_color'] ?? ''))); ?></span>
+          <?php endif; ?>
+        </div>
+
+        <!-- FOUND SIDE - reported by the finder -->
+        <div>
+          <span class="badge badge-found" style="margin-bottom:8px;display:inline-block;">Found &mdash; Finder: <?php echo htmlspecialchars($match['finder_name']); ?></span>
+          <?php if ($match['found_has_photo']): ?>
+            <img src="serve_photo.php?id=<?php echo $match['found_report_id']; ?>" style="width:100%;height:160px;object-fit:cover;border-radius:10px;margin-bottom:10px;">
+          <?php else: ?>
+            <div style="width:100%;height:160px;background:#eef0f6;border-radius:10px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:12px;">No photo uploaded</div>
+          <?php endif; ?>
           <div class="claim-label">Item Name</div>
           <h3 style="font-size:15px;margin-bottom:8px;"><?php echo htmlspecialchars($match['found_item']); ?></h3>
           <div class="claim-label">Description</div>
           <p style="font-size:13px;color:var(--text-dark);margin-bottom:10px;"><?php echo htmlspecialchars($match['found_desc']); ?></p>
           <span class="tag">Location: <?php echo htmlspecialchars($match['found_location']); ?></span>
           <span class="tag">Found Date: <?php echo date('M j, Y', strtotime($match['found_date'])); ?></span>
+          <?php if ($match['found_color'] || $match['found_brand']): ?>
+            <span class="tag"><?php echo htmlspecialchars(trim(($match['found_brand'] ?? '') . ' ' . ($match['found_color'] ?? ''))); ?></span>
+          <?php endif; ?>
         </div>
+
       </div>
     </div>
 
@@ -263,4 +295,8 @@ $confidence = calc_match_confidence($match['lost_desc'], $match['found_desc'], $
 
 </div>
 
-<?php require 'admin_footer.php'; ?>
+    </main>
+  </div>
+</div>
+</body>
+</html>

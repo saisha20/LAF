@@ -18,6 +18,7 @@ $navItems = [
     'search'        => ['label' => 'Search Items',  'href' => 'search_items.php',   'icon' => '<img src="image/search.png" alt="">'],
     'post'          => ['label' => 'Post Item',     'href' => 'report_lost.php',    'icon' => '<img src="image/post.png" alt="">'],
     'reports'       => ['label' => 'Reports',       'href' => 'my_reports.php',     'icon' => '<img src="image/report.png" alt="">'],
+    'analysis'      => ['label' => 'Analysis',      'href' => 'analysis.php',       'icon' => '<img src="image/analysis.png" alt="">'],
     'claims'        => ['label' => 'My Claims',     'href' => 'my_claims.php',      'icon' => '<img src="image/claim.png" alt="">'],
     'notifications' => ['label' => 'Notifications', 'href' => 'notifications.php',  'icon' => '<img src="image/notification.png" alt="">'],
     'profile'       => ['label' => 'Profile',       'href' => 'profile.php',        'icon' => '<img src="image/profile.png" alt="">'],

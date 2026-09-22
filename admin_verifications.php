@@ -1,7 +1,8 @@
 <?php
 require_once 'auth.php';
 require_once 'db.php';
-require_once 'match_helper.php';   // <-- add this
+require_once 'match_helper.php'; 
+require 'admin_header.php';  // <-- add this
 
 requireAdmin();
 
@@ -9,6 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $matchId = isset($_POST['match_id']) ? (int) $_POST['match_id'] : 0;
     $action  = $_POST['action'] ?? '';
+    $reason  = trim($_POST['rejection_reason'] ?? '');
 
     if ($matchId > 0 && in_array($action, ['verify', 'reject'], true)) {
 
@@ -35,11 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $pdo->prepare("
                     UPDATE matches
-                    SET status = 'rejected', verified_by = ?, verified_at = NOW()
+                    SET status = 'rejected', verified_by = ?, verified_at = NOW(), rejection_reason = ?
                     WHERE match_id = ? AND status = 'pending'
-                ")->execute([$_SESSION['user_id'], $matchId]);
+                ")->execute([$_SESSION['user_id'], $reason !== '' ? $reason : null, $matchId]);
 
-                notify_match_rejected($pdo, $m['lost_report_id'], $m['found_report_id']);
+                notify_match_rejected($pdo, $m['lost_report_id'], $m['found_report_id'], $reason);
             }
         }
     }
@@ -61,19 +63,23 @@ $stmt = $pdo->query("
         m.status,
         m.created_at,
 
-        lost.item_name AS lost_item,
-        lost.description AS lost_description,
-        lost.color AS lost_color,
-        lost.brand AS lost_brand,
-        lost.location AS lost_location,
-        lost.date_reported AS lost_date,
+       lost.item_name AS lost_item,
+lost.description AS lost_description,
+lost.color AS lost_color,
+lost.brand AS lost_brand,
+lost.location AS lost_location,
+lost.date_reported AS lost_date,
+lost.photo_data AS lost_photo_data,
+lost.photo_type AS lost_photo_type,
 
-        found.item_name AS found_item,
-        found.description AS found_description,
-        found.color AS found_color,
-        found.brand AS found_brand,
-        found.location AS found_location,
-        found.date_reported AS found_date,
+found.item_name AS found_item,
+found.description AS found_description,
+found.color AS found_color,
+found.brand AS found_brand,
+found.location AS found_location,
+found.date_reported AS found_date,
+found.photo_data AS found_photo_data,
+found.photo_type AS found_photo_type,
 
         lost_user.full_name AS lost_user_name,
         found_user.full_name AS found_user_name
@@ -118,13 +124,13 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 .admin-container {
     width: 92%;
-    max-width: 1300px;
-    margin: 50px auto;
+    max-width: 1000px;
+    margin: 0px auto;
 }
 
 .back-link {
     display: inline-block;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
     color: #111b3a;
     text-decoration: none;
     font-weight: 600;
@@ -132,7 +138,7 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 .page-description {
     color: #667085;
-    margin-bottom: 30px;
+    margin-bottom:0px;
 }
 
 
@@ -141,34 +147,9 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 .match-card {
     border: 1px solid #d9dee8;
     border-radius: 12px;
-    padding: 25px;
+    padding: 10px;
     margin-bottom: 25px;
     background: #fff;
-}
-
-
-/* Header */
-
-.match-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.match-header h2 {
-    margin: 0;
-    color: #111b3a;
-    font-size: 20px;
-}
-
-.pending-badge {
-    background: #fff4d6;
-    color: #8a6200;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
 }
 
 
@@ -191,7 +172,39 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
     margin-bottom: 15px;
     color: #111b3a;
 }
+.item-photo {
+    width: 100%;
+    height: 220px;
+    margin-bottom: 18px;
+    border: 1px solid #e1e5eb;
+    border-radius: 8px;
+    background: #f5f7fb;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
+.item-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.no-photo {
+    width: 100%;
+    height: 220px;
+    margin-bottom: 18px;
+    border: 1px solid #e1e5eb;
+    border-radius: 8px;
+    background: #f5f7fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #667085;
+    font-size: 14px;
+}
 .report-label {
     font-size: 13px;
     color: #667085;
@@ -276,79 +289,10 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <link rel="icon" type="image/png" href="image/foundly.png">
 </head>
-
-
 <body>
-
-
-<!-- HEADER -->
-
-<header class="site-header">
-
-    <div class="brand">
-
-        <div class="brand-icon"><img src="image/foundly.png" alt="Foundly logo"></div>
-
-        <div class="brand-text">
-
-            <span class="brand-name">
-                Foundly
-            </span>
-
-            <span class="brand-tagline">
-                Reliable Recovery
-            </span>
-
-        </div>
-
-    </div>
-
-
-    <nav class="site-nav">
-
-        <a href="index.php">
-            Home
-        </a>
-
-        <a href="admin_dashboard.php">
-            Admin Dashboard
-        </a>
-
-    </nav>
-
-
-    <div class="nav-actions">
-
-        <span class="nav-login">
-
-            Admin:
-            <?php
-            echo htmlspecialchars($_SESSION['full_name']);
-            ?>
-
-        </span>
-
-
-        <a href="logout.php" class="btn btn-navy">
-            Logout
-        </a>
-
-    </div>
-
-</header>
-
-
-
 <!-- MAIN -->
 
 <div class="admin-container">
-
-
-    <a href="admin_dashboard.php" class="back-link">
-        ← Back to Dashboard
-    </a>
-
-
     <h1>
         Pending Verifications
     </h1>
@@ -412,7 +356,22 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <h3>
                             Lost Item
                         </h3>
+                        <?php if (!empty($match['lost_photo_data'])): ?>
 
+    <div class="item-photo">
+        <img
+            src="data:<?= htmlspecialchars($match['lost_photo_type'] ?: 'image/jpeg') ?>;base64,<?= base64_encode($match['lost_photo_data']) ?>"
+            alt="Lost item photo"
+        >
+    </div>
+
+<?php else: ?>
+
+    <div class="no-photo">
+        No photo available
+    </div>
+
+<?php endif; ?>
 
                         <div class="report-label">
                             Item Name
@@ -515,7 +474,22 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <h3>
                             Found Item
                         </h3>
+<?php if (!empty($match['found_photo_data'])): ?>
 
+    <div class="item-photo">
+        <img
+            src="data:<?= htmlspecialchars($match['found_photo_type'] ?: 'image/jpeg') ?>;base64,<?= base64_encode($match['found_photo_data']) ?>"
+            alt="Found item photo"
+        >
+    </div>
+
+<?php else: ?>
+
+    <div class="no-photo">
+        No photo available
+    </div>
+
+<?php endif; ?>
 
                         <div class="report-label">
                             Item Name
@@ -649,7 +623,7 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                     <!-- REJECT -->
 
-                    <form method="POST">
+                    <form method="POST" class="reject-form" id="reject-form-<?php echo (int)$match['match_id']; ?>">
 
                         <input
                             type="hidden"
@@ -663,10 +637,16 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             value="reject"
                         >
 
+                        <input
+                            type="hidden"
+                            name="rejection_reason"
+                            class="reject-reason-field"
+                        >
+
                         <button
-                            type="submit"
+                            type="button"
                             class="btn-reject"
-                            onclick="return confirm('Are you sure you want to reject this match?');"
+                            onclick="openRejectModal(<?php echo (int)$match['match_id']; ?>)"
                         >
                             ✕ Reject Match
                         </button>
@@ -689,6 +669,97 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 
+<!-- Reject reason modal -->
+<div id="reject-modal-overlay" class="reject-modal-overlay">
+  <div class="reject-modal">
+    <h3>Reject this match?</h3>
+    <p>Let the user know why, so they understand what to do next.</p>
+    <textarea id="reject-modal-textarea" rows="4" placeholder="e.g. Photos don't match, item description doesn't match, wrong location..."></textarea>
+    <div class="reject-modal-actions">
+      <button type="button" class="btn btn-outline" onclick="closeRejectModal()">Cancel</button>
+      <button type="button" class="btn-reject" onclick="confirmRejectModal()">Reject Match</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.reject-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 24, 40, 0.55);
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.reject-modal-overlay.open {
+  display: flex;
+}
+.reject-modal {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.25);
+}
+.reject-modal h3 {
+  margin: 0 0 6px;
+  font-size: 17px;
+}
+.reject-modal p {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: #667085;
+}
+.reject-modal textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  font-family: inherit;
+  resize: vertical;
+}
+.reject-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+</style>
+
+<script>
+var rejectModalMatchId = null;
+
+function openRejectModal(matchId) {
+  rejectModalMatchId = matchId;
+  document.getElementById('reject-modal-textarea').value = '';
+  document.getElementById('reject-modal-overlay').classList.add('open');
+  document.getElementById('reject-modal-textarea').focus();
+}
+
+function closeRejectModal() {
+  document.getElementById('reject-modal-overlay').classList.remove('open');
+  rejectModalMatchId = null;
+}
+
+function confirmRejectModal() {
+  if (rejectModalMatchId === null) return;
+  var form = document.getElementById('reject-form-' + rejectModalMatchId);
+  var reason = document.getElementById('reject-modal-textarea').value.trim();
+  form.querySelector('.reject-reason-field').value = reason;
+  form.submit();
+}
+
+document.getElementById('reject-modal-overlay').addEventListener('click', function (e) {
+  if (e.target === this) closeRejectModal();
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') closeRejectModal();
+});
+</script>
 </body>
 
 </html>

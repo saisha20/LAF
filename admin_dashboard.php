@@ -1,7 +1,7 @@
 <?php
-require_once 'auth.php';
-require_once 'db.php';
-requireAdmin();
+$pageTitle = 'Admin Dashboard';
+$activeAdminPage = 'dashboard';
+require 'admin_header.php';
 
 $userCount = $pdo->query(
     'SELECT COUNT(*) FROM users'
@@ -15,15 +15,6 @@ $pendingCount = $pdo->query(
     'SELECT COUNT(*) FROM matches WHERE status = "pending"'
 )->fetchColumn();
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Admin Dashboard - Foundly</title>
-
-<link rel="stylesheet" href="base.css?v=2">
-<link rel="stylesheet" href="dashboard.css">
 
 <style>
 .dashboard-link {
@@ -50,118 +41,82 @@ $pendingCount = $pdo->query(
 }
 </style>
 
-<link rel="icon" type="image/png" href="image/foundly.png">
-</head>
+<h1>Admin Dashboard</h1>
 
-<body>
+<p>Overview of the Foundly system.</p>
 
-<header class="site-header">
 
-  <div class="brand">
-    <div class="brand-icon"><img src="image/foundly.png" alt="Foundly logo"></div>
+<div class="dash-cards">
 
-    <div class="brand-text">
-      <span class="brand-name">Foundly</span>
-      <span class="brand-tagline">Reliable Recovery</span>
-    </div>
-  </div>
+    <!-- USERS -->
 
-  <nav class="site-nav">
-    <a href="index.php">Home</a>
-    <a href="admin_dashboard.php">Admin Dashboard</a>
-  </nav>
+    <a href="admin_users.php" class="dashboard-link">
 
-  <div class="nav-actions">
-    <span class="nav-login">
-        Admin:
-        <?php echo htmlspecialchars($_SESSION['full_name']); ?>
-    </span>
+        <div class="dash-card">
 
-    <a href="logout.php" class="btn btn-navy">
-        Logout
+            <h3>Registered Users</h3>
+
+            <p>
+                <?php echo (int)$userCount; ?>
+                users registered.
+            </p>
+
+            <span class="card-link">
+                View Users →
+            </span>
+
+        </div>
+
     </a>
-  </div>
-
-</header>
 
 
-<div class="dash-wrap">
+    <!-- REPORTS -->
 
-    <h1>Admin Dashboard</h1>
+    <a href="admin_reports.php" class="dashboard-link">
 
-    <p>Overview of the Foundly system.</p>
+        <div class="dash-card">
 
+            <h3>Total Reports</h3>
 
-    <div class="dash-cards">
+            <p>
+                <?php echo (int)$reportCount; ?>
+                lost/found reports submitted.
+            </p>
 
-        <!-- USERS -->
+            <span class="card-link">
+                View Reports →
+            </span>
 
-        <a href="admin_users.php" class="dashboard-link">
+        </div>
 
-            <div class="dash-card">
-
-                <h3>Registered Users</h3>
-
-                <p>
-                    <?php echo (int)$userCount; ?>
-                    users registered.
-                </p>
-
-                <span class="card-link">
-                    View Users →
-                </span>
-
-            </div>
-
-        </a>
+    </a>
 
 
-        <!-- REPORTS -->
+    <!-- VERIFICATIONS -->
 
-        <a href="admin_reports.php" class="dashboard-link">
+    <a href="admin_verifications.php" class="dashboard-link">
 
-            <div class="dash-card">
+        <div class="dash-card">
 
-                <h3>Total Reports</h3>
+            <h3>Pending Verifications</h3>
 
-                <p>
-                    <?php echo (int)$reportCount; ?>
-                    lost/found reports submitted.
-                </p>
+            <p>
+                <?php echo (int)$pendingCount; ?>
+                matches waiting for review.
+            </p>
 
-                <span class="card-link">
-                    View Reports →
-                </span>
+            <span class="card-link">
+                Review Matches →
+            </span>
 
-            </div>
+        </div>
 
-        </a>
-
-
-        <!-- VERIFICATIONS -->
-
-        <a href="admin_verifications.php" class="dashboard-link">
-
-            <div class="dash-card">
-
-                <h3>Pending Verifications</h3>
-
-                <p>
-                    <?php echo (int)$pendingCount; ?>
-                    matches waiting for review.
-                </p>
-
-                <span class="card-link">
-                    Review Matches →
-                </span>
-
-            </div>
-
-        </a>
-
-    </div>
+    </a>
 
 </div>
 
+    </main>
+  </div>
+</div>
 </body>
 </html>
