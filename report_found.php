@@ -4,6 +4,11 @@ require_once 'db.php';
 require_once 'match_helper.php';
 requireLogin();
 
+if (isAdmin()) {
+    header('Location: admin_dashboard.php');
+    exit;
+}
+
 $categories = $pdo->query(
     'SELECT category_id, category_name FROM categories ORDER BY category_name'
 )->fetchAll(PDO::FETCH_ASSOC);

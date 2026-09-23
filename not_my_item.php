@@ -11,6 +11,10 @@
 require_once 'auth.php';
 require_once 'db.php';
 requireLogin();
+if (isAdmin()) {
+    header('Location: admin_dashboard.php');
+    exit;
+}
 
 $uid            = $_SESSION['user_id'];
 $otherReportId  = (int) ($_GET['report_id'] ?? 0);

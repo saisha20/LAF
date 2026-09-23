@@ -2,7 +2,10 @@
 require_once 'auth.php';
 require_once 'db.php';
 requireLogin();
-
+if (isAdmin()) {
+    header('Location: admin_dashboard.php');
+    exit;
+}
 $error = '';
 $success = '';
 

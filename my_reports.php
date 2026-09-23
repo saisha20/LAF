@@ -3,6 +3,11 @@ require_once 'auth.php';
 require_once 'db.php';
 require_once 'category_icon.php';
 requireLogin();
+if (isAdmin()) {
+    header('Location: admin_dashboard.php');
+    exit;
+}
+
 
 $uid = $_SESSION['user_id'];
 

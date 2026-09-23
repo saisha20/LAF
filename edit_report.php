@@ -3,7 +3,10 @@ require_once 'auth.php';
 require_once 'db.php';
 require_once 'category_icon.php';
 requireLogin();
-
+if (isAdmin()) {
+    header('Location: admin_dashboard.php');
+    exit;
+}
 $uid = $_SESSION['user_id'];
 $reportId = (int)($_GET['id'] ?? $_POST['report_id'] ?? 0);
 

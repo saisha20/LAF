@@ -4,6 +4,10 @@ require_once 'db.php';
 require_once 'category_icon.php';
 require_once 'match_helper.php';
 requireLogin();
+if (isAdmin()) {
+    header('Location: admin_dashboard.php');
+    exit;
+}
 
 $reportId = (int)($_GET['id'] ?? 0);
 $uid = $_SESSION['user_id'];

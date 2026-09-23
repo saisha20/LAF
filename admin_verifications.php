@@ -35,14 +35,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             } else {
 
-                $pdo->prepare("
-                    UPDATE matches
-                    SET status = 'rejected', verified_by = ?, verified_at = NOW(), rejection_reason = ?
-                    WHERE match_id = ? AND status = 'pending'
-                ")->execute([$_SESSION['user_id'], $reason !== '' ? $reason : null, $matchId]);
+    $pdo->prepare("
+        UPDATE matches
+        SET status = 'rejected', verified_by = ?, verified_at = NOW(), rejection_reason = ?
+        WHERE match_id = ? AND status = 'pending'
+    ")->execute([$_SESSION['user_id'], $reason !== '' ? $reason : null, $matchId]);
 
-                notify_match_rejected($pdo, $m['lost_report_id'], $m['found_report_id'], $reason);
-            }
+    $pdo->prepare('UPDATE reports SET status = "rejected" WHERE report_id IN (?, ?)')
+        ->execute([$m['lost_report_id'], $m['found_report_id']]);
+
+    notify_match_rejected($pdo, $m['lost_report_id'], $m['found_report_id'], $reason);
+}
         }
     }
 

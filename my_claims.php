@@ -4,6 +4,11 @@ require_once 'db.php';
 require_once 'category_icon.php';
 requireLogin();
 
+if (isAdmin()) {
+    header('Location: admin_dashboard.php');
+    exit;
+}
+
 $uid = $_SESSION['user_id'];
 $search = trim($_GET['q'] ?? '');
 
