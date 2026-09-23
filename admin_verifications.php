@@ -2,7 +2,8 @@
 require_once 'auth.php';
 require_once 'db.php';
 require_once 'match_helper.php'; 
-require 'admin_header.php';  // <-- add this
+$activeAdminPage = 'matches';
+require 'admin_header.php'; 
 
 requireAdmin();
 
@@ -112,23 +113,12 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-
-<meta charset="UTF-8">
-
-<title>Pending Verifications - Foundly</title>
-
-<link rel="stylesheet" href="base.css?v=2">
-
 <style>
 
 .admin-container {
     width: 92%;
     max-width: 1000px;
-    margin: 0px auto;
+    margin: 0px;
 }
 
 .back-link {
@@ -290,9 +280,6 @@ $matches = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 </style>
 
-<link rel="icon" type="image/png" href="image/foundly.png">
-</head>
-<body>
 <!-- MAIN -->
 
 <div class="admin-container">
@@ -763,6 +750,3 @@ document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape') closeRejectModal();
 });
 </script>
-</body>
-
-</html>
